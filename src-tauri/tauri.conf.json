@@ -1,0 +1,60 @@
+{
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist",
+    "withGlobalTauri": false
+  },
+  "package": {
+    "productName": "chinglish",
+    "version": "./../package.json"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "identifier": "com.chinglish",
+      "publisher": "USH2A",
+      "shortDescription": "Chinglish or English?",
+      "longDescription": "Chinglish or English?",
+      "icon": ["icons/icon.ico"],
+      "windows": {
+        "allowDowngrades": true,
+        "certificateThumbprint": null,
+        "digestAlgorithm": null,
+        "timestampUrl": null,
+        "tsp": false,
+        "webviewFixedRuntimePath": null,
+        "webviewInstallMode": {
+          "silent": true,
+          "type": "downloadBootstrapper"
+        },
+        "nsis": {
+          "languages": ["SimpChinese"]
+        },
+        "wix": {
+          "language": "zh-CN"
+        }
+      }
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "title": "chinglish",
+        "width": 800,
+        "height": 600
+      }
+    ]
+  }
+}
