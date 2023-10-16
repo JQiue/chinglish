@@ -54,7 +54,7 @@ onMounted(async () => {
       </v-tabs>
     </div>
     <div class="content">
-      <n-input v-model:value="wordInput"></n-input>
+      <n-input placeholder="单词" v-model:value="wordInput"></n-input>
       <n-button @click="handleAdd">添加</n-button>
       <template v-if="tab == 'list'">
         <n-list hoverable>
