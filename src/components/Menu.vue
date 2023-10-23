@@ -3,7 +3,7 @@ import { MenuOption } from "naive-ui";
 import { onMounted, ref, h } from "vue";
 import { RouterLink } from "vue-router";
 
-const activeKey = ref<string | null>("reader");
+const activeKey = ref<string | null>("read");
 
 const menuOptions: MenuOption[] = [
   {
@@ -12,12 +12,12 @@ const menuOptions: MenuOption[] = [
         RouterLink,
         {
           to: {
-            path: "reader",
+            path: "read",
           },
         },
         { default: () => "阅读" }
       ),
-    key: "reader",
+    key: "read",
   },
   {
     label: () =>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { unfamiliarWordsTable } from '../db/services';
+import { unfamiliarWordsTable } from '@/db/services.ts';
 import { CarouselInst } from 'naive-ui';
 
 // const props = defineProps<{ content: string }>();
@@ -55,7 +55,7 @@ onMounted(async () => {
     </div>
     <div class="content">
       <n-input placeholder="单词" v-model:value="wordInput"></n-input>
-      <n-button @click="handleAdd">添加</n-button>
+      <n-button @click="handleAdd" block>添加</n-button>
       <template v-if="tab == 'list'">
         <n-list hoverable>
           <n-list-item v-for="word in  words ">

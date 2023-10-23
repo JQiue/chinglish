@@ -1,5 +1,5 @@
 import { execute, select } from ".";
-import { nowDatetime } from "../helpers";
+import { nowDatetime } from "@/helpers";
 
 export const updateProficiency = async (id: number, opreator: "+" | "-") => {
   const sql = `UPDATE unfamiliar_words SET proficiency=proficiency${opreator}1, review_count=review_count+1 WHERE id = ?`;
@@ -58,8 +58,9 @@ class ArticlesTable {
   }
   /** 更新 */
   async update() {}
-  /** 获取列表 */
-  async get() {
+  /** 获取文章 */
+  async get(id?: number) {
+    if (id) return await this.getById(id);
     return await select<Article[]>(`SELECT * FROM articles`);
   }
   /** 更新阅读次数 */
@@ -69,6 +70,9 @@ class ArticlesTable {
       sql += " AND read_count>0";
     }
     return await execute(sql, [id]);
+  }
+  async getById(id: number) {
+    return await select<Article[]>(`SELECT * FROM articles WHERE id=?`, [id]);
   }
 }
 

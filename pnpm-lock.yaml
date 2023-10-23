@@ -8,6 +8,9 @@ dependencies:
   '@tauri-apps/api':
     specifier: ^1.4.0
     version: registry.npmmirror.com/@tauri-apps/api@1.4.0
+  '@types/node':
+    specifier: ^20.8.7
+    version: registry.npmmirror.com/@types/node@20.8.7
   dayjs:
     specifier: ^1.11.10
     version: registry.npmmirror.com/dayjs@1.11.10
@@ -42,7 +45,7 @@ devDependencies:
     version: registry.npmmirror.com/typescript@5.2.2
   vite:
     specifier: ^4.4.4
-    version: registry.npmmirror.com/vite@4.4.9
+    version: registry.npmmirror.com/vite@4.4.9(@types/node@20.8.7)
   vue-tsc:
     specifier: ^1.8.5
     version: registry.npmmirror.com/vue-tsc@1.8.11(typescript@5.2.2)
@@ -538,6 +541,13 @@ packages:
     version: 4.14.199
     dev: false
 
+  registry.npmmirror.com/@types/node@20.8.7:
+    resolution: {integrity: sha512-21TKHHh3eUHIi2MloeptJWALuCu5H7HQTdTrWIFReA8ad+aggoX+lRes3ex7/FtpC+sVUpFMQ+QTfYr74mruiQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/node/-/node-20.8.7.tgz}
+    name: '@types/node'
+    version: 20.8.7
+    dependencies:
+      undici-types: registry.npmmirror.com/undici-types@5.25.3
+
   registry.npmmirror.com/@vitejs/plugin-vue@4.3.4(vite@4.4.9)(vue@3.3.4):
     resolution: {integrity: sha512-ciXNIHKPriERBisHFBvnTbfKa6r9SAesOYXeGDzgegcvy9Q4xdScSHAmKbNT0M3O0S9LKhIf5/G+UYG4NnnzYw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@vitejs/plugin-vue/-/plugin-vue-4.3.4.tgz}
     id: registry.npmmirror.com/@vitejs/plugin-vue/4.3.4
@@ -548,7 +558,7 @@ packages:
       vite: ^4.0.0
       vue: ^3.2.25
     dependencies:
-      vite: registry.npmmirror.com/vite@4.4.9
+      vite: registry.npmmirror.com/vite@4.4.9(@types/node@20.8.7)
       vue: registry.npmmirror.com/vue@3.3.4
     dev: true
 
@@ -1001,6 +1011,11 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  registry.npmmirror.com/undici-types@5.25.3:
+    resolution: {integrity: sha512-Ga1jfYwRn7+cP9v8auvEXN1rX3sWqlayd4HP7OKk4mZWylEmu3KzXDUGrQUN6Ol7qo1gPvB2e5gX6udnyEPgdA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/undici-types/-/undici-types-5.25.3.tgz}
+    name: undici-types
+    version: 5.25.3
+
   registry.npmmirror.com/vdirs@0.1.8(vue@3.3.4):
     resolution: {integrity: sha512-H9V1zGRLQZg9b+GdMk8MXDN2Lva0zx72MPahDKc30v+DtwKjfyOSXWRIX4t2mhDubM1H09gPhWeth/BJWPHGUw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vdirs/-/vdirs-0.1.8.tgz}
     id: registry.npmmirror.com/vdirs/0.1.8
@@ -1019,8 +1034,9 @@ packages:
     version: 0.0.3
     dev: false
 
-  registry.npmmirror.com/vite@4.4.9:
+  registry.npmmirror.com/vite@4.4.9(@types/node@20.8.7):
     resolution: {integrity: sha512-2mbUn2LlUmNASWwSCNSJ/EG2HuSRTnVNaydp6vMCm5VIqJsjMfbIWtbH2kDuwUVW5mMUKKZvGPX/rqeqVvv1XA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vite/-/vite-4.4.9.tgz}
+    id: registry.npmmirror.com/vite/4.4.9
     name: vite
     version: 4.4.9
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -1049,6 +1065,7 @@ packages:
       terser:
         optional: true
     dependencies:
+      '@types/node': registry.npmmirror.com/@types/node@20.8.7
       esbuild: registry.npmmirror.com/esbuild@0.18.20
       postcss: registry.npmmirror.com/postcss@8.4.29
       rollup: registry.npmmirror.com/rollup@3.29.1

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import Menu from './components/Menu.vue';
+import Menu from '@/components/Menu.vue';
 
 onMounted(async () => {
 })

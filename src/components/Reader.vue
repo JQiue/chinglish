@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { onMounted } from 'vue';
-import { ref } from 'vue';
+import { watch } from 'vue';
+import { ref, computed } from 'vue';
 
-const props = defineProps<{ content?: string }>();
+const props = defineProps<{ title?: string, content?: string }>();
 
-const title = ref('沉浸式阅读');
+const title = ref<string | undefined>('沉浸式阅读');
 const contentSegment = ref<string[]>([]);
 const voices = ref<Record<string, any>>([]);
 
-function toSegment(content: string) {
+/** 将内容处理成段 */
+function toSegment(content: string | undefined) {
+  contentSegment.value = [];
   contentSegment.value = contentSegment.value.concat(content.split('\n'));
+  console.log(contentSegment.value);
 }
 
 function speech(content: string) {
@@ -30,11 +32,10 @@ const voiceNames = computed(() => {
   return names;
 })
 
-onMounted(async () => {
-  if (props.content) {
-    toSegment(props.content)
-  }
-});
+watch(props, () => {
+  title.value = props.title;
+  toSegment(props.content);
+})
 </script>
 
 <template>
@@ -76,6 +77,12 @@ onMounted(async () => {
         <p v-for="text in contentSegment">{{ text }}</p>
       </div>
     </div>
+    <div class="reader-bottom">
+      <!-- <n-space justify="center">
+        <n-button block @click="handlePreviousArticle">上一篇</n-button>
+        <n-button block @click="handleNextArticle">下一篇</n-button>
+      </n-space> -->
+    </div>
   </div>
 </template>
 
@@ -114,6 +121,12 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.reader-bottom {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
 }
 
 .btn-group {

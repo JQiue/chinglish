@@ -19,7 +19,6 @@ onMounted(async () => {
   version.value = await app.getVersion();
 })
 
-
 </script>
 
 <style scoped></style>
