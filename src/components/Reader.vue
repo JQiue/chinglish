@@ -11,8 +11,9 @@ const voices = ref<Record<string, any>>([]);
 /** 将内容处理成段 */
 function toSegment(content: string | undefined) {
   contentSegment.value = [];
-  contentSegment.value = contentSegment.value.concat(content.split('\n'));
-  console.log(contentSegment.value);
+  if (content) {
+    contentSegment.value = contentSegment.value.concat(content.split('\n'));
+  }
 }
 
 function speech(content: string) {

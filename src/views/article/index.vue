@@ -61,7 +61,7 @@ const handleDelete = async (id: number) => {
   await getArticles();
 }
 
-const handleEdit = async (id: number) => {
+const handleEdit = async (_id: number) => {
 }
 
 const handleRead = async (id: number) => {

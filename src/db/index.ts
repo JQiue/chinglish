@@ -10,7 +10,10 @@ const db = await SQL.load(
  * @description: 执行 SELECT 语句
  * @return {Promise<T>}
  */
-export const select = async <T>(sql: string, bindValues?: []): Promise<T> => {
+export const select = async <T>(
+  sql: string,
+  bindValues?: any[]
+): Promise<T> => {
   try {
     return await db.select<T>(sql, bindValues);
   } catch (error) {

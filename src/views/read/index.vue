@@ -8,6 +8,7 @@
 
 <script setup lang="ts">
 import { articlesTable } from '@/db/services';
+import { getLastArticleId, saveLastArticleId } from '@/helpers/storage';
 import { onMounted, ref } from 'vue';
 import Reader from '@/components/Reader.vue';
 
@@ -22,50 +23,68 @@ const hasArticleId = async () => {
   return localStorage.getItem('lastArticleId');
 }
 
+const getCurrentArticleIndex = () => {
+  if (articles.value && currentArticle.value) {
+    return articles.value.findIndex((article) => {
+      return currentArticle.value!.id == article.id
+    })
+  } else {
+    return -1
+  }
+}
+
 const handlePreviousArticle = async () => {
-  const findedIndex = articles.value?.findIndex((article) => {
-    if (currentArticle.value?.id == article.id) return true;
-  })
-  if (findedIndex != -1) {
-    if (findedIndex == 0) {
-      currentArticle.value = articles.value[articles.value?.length - 1];
-    } else {
-      articles.value[findedIndex - 1];
+  if (articles.value) {
+    const index = getCurrentArticleIndex();
+    const prevIndex = (index + 1 + articles.value.length) % articles.value.length;
+    updateCurrentArticle(prevIndex);
+    if (currentArticle.value) {
+      saveLastArticleId(currentArticle.value.id.toString())
     }
   }
-  localStorage.setItem('lastArticleId', currentArticle.value.id.toString());
 }
 
 const handleNextArticle = async () => {
-  const findedIndex = articles.value?.findIndex((article) => {
-    if (currentArticle.value?.id == article.id) return true;
-  })
-  if (findedIndex != -1) {
-    if (findedIndex == articles.value?.length - 1) {
-      currentArticle.value = articles.value[0];
-    } else {
-      currentArticle.value = articles.value[findedIndex + 1];
+  if (articles.value) {
+    const index = getCurrentArticleIndex();
+    const nextIndex = (index + 1) % articles.value.length;
+    updateCurrentArticle(nextIndex);
+    if (currentArticle.value) {
+      saveLastArticleId(currentArticle.value.id.toString())
     }
   }
-  localStorage.setItem('lastArticleId', currentArticle.value.id.toString());
+}
+
+const updateCurrentArticle = (index: number) => {
+  if (articles.value) {
+    currentArticle.value = articles.value[index];
+  } else {
+    alert('没有可用的文章列表')
+  }
 }
 
 const loadArticle = async (hasArticle: boolean) => {
   if (hasArticle) {
-    const id = Number(localStorage.getItem('lastArticleId'));
+    const id = Number(getLastArticleId());
     currentArticle.value = (await articlesTable.get(id))[0];
   } else {
-    localStorage.setItem('lastArticleId', currentArticle.value.id.toString());
+    if (currentArticle.value) {
+      saveLastArticleId(currentArticle.value.id.toString())
+    }
   }
 }
 
-onMounted(async () => {
+const init = async () => {
   await getArticles();
   if (await hasArticleId()) {
     await loadArticle(true);
   } else {
     await loadArticle(false);
   }
+}
+
+onMounted(async () => {
+  await init();
 });
 </script>
 
