@@ -25,6 +25,19 @@ const menuOptions: MenuOption[] = [
         RouterLink,
         {
           to: {
+            path: "rss",
+          },
+        },
+        { default: () => "RSS" }
+      ),
+    key: "rss",
+  },
+  {
+    label: () =>
+      h(
+        RouterLink,
+        {
+          to: {
             path: "unfamiliar_word",
           },
         },
@@ -42,7 +55,7 @@ const menuOptions: MenuOption[] = [
           },
         },
         {
-          default: () => "文章管理",
+          default: () => "文章",
         }
       ),
     key: "article",

@@ -16,6 +16,9 @@
       "shell": {
         "all": false,
         "open": true
+      },
+      "path": {
+        "all": true
       }
     },
     "bundle": {
@@ -23,8 +26,14 @@
       "identifier": "com.chinglish",
       "publisher": "USH2A",
       "shortDescription": "Chinglish or English?",
-      "longDescription": "Chinglish or English?",
-      "icon": ["icons/icon.ico"],
+      "longDescription": "Chinglish",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
       "windows": {
         "allowDowngrades": true,
         "certificateThumbprint": null,
@@ -55,6 +64,10 @@
         "width": 800,
         "height": 600
       }
-    ]
+    ],
+    "systemTray": {
+      "iconPath": "icons/icon.ico",
+      "iconAsTemplate": true
+    }
   }
 }

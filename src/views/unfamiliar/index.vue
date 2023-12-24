@@ -7,15 +7,9 @@ import { CarouselInst } from 'naive-ui';
 const tab = ref('list');
 const words = ref<UnfamiliarWord[]>([]);
 const window = ref(0);
-const wordInput = ref('');
 const review_carousel = ref<CarouselInst | null>();
 const currentIndexOfCarousel = ref(0);
-
-const handleAdd = () => {
-  unfamiliarWordsTable.add(wordInput.value)
-  wordInput.value = ''
-  handleGetWords();
-}
+const checkWords = ref([]);
 
 const handleGetWords = async () => {
   words.value = await unfamiliarWordsTable.get();
@@ -39,6 +33,17 @@ const handleForget = async () => {
   await handleGetWords();
 }
 
+const handleCheckUpdate = () => {
+  console.log(checkWords.value);
+}
+
+const handleDeleteWord = async () => {
+  checkWords.value.forEach(async value => {
+    await unfamiliarWordsTable.delete(value)
+  });
+  await handleGetWords();
+}
+
 onMounted(async () => {
   handleGetWords();
 });
@@ -46,6 +51,7 @@ onMounted(async () => {
 
 <template>
   <div class="container">
+
     <div class="top">
       <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="end">
         <v-tab :value="'list'">列表</v-tab>
@@ -53,25 +59,28 @@ onMounted(async () => {
         <v-tab :value="'review'">复习</v-tab>
       </v-tabs>
     </div>
+
     <div class="content">
-      <n-input placeholder="单词" v-model:value="wordInput"></n-input>
-      <n-button @click="handleAdd" block>添加</n-button>
+
       <template v-if="tab == 'list'">
-        <n-list hoverable>
-          <n-list-item v-for="word in  words ">
-            <template #prefix>
-              <n-checkbox size="small" />
-            </template>
-            <n-thing content-style="font-weight: 600">
-              {{ word.word }}
-              <n-progress type="line" :percentage="getProgress(word.proficiency)" />
-            </n-thing>
-          </n-list-item>
-        </n-list>
+        <n-checkbox-group v-model:value="checkWords" @update:value="handleCheckUpdate">
+          <n-list hoverable>
+            <n-list-item v-for="word in words">
+              <template #prefix>
+                <n-checkbox size="small" :value="word.id" />
+              </template>
+              <n-thing content-style="font-weight: 600">
+                {{ word.word }}
+                <n-progress type="line" :percentage="getProgress(word.proficiency)" />
+              </n-thing>
+            </n-list-item>
+          </n-list>
+        </n-checkbox-group>
       </template>
+
       <template v-if="tab == 'card'">
         <v-window v-model="window" show-arrows>
-          <v-window-item v-for="word in words " :key="word.id">
+          <v-window-item v-for="word in words" :key="word.id">
             <v-card height="444" class="d-flex justify-center align-center flex-column">
               <span class="text-h2">{{ word.word }}</span>
               <v-btn>Space</v-btn>
@@ -79,6 +88,7 @@ onMounted(async () => {
           </v-window-item>
         </v-window>
       </template>
+
       <template v-if="tab == 'review'">
         <n-carousel v-model:current-index="currentIndexOfCarousel" ref="review_carousel" @keyup.left="handleRemember"
           @keyup.right="handleForget">
@@ -91,8 +101,28 @@ onMounted(async () => {
           <n-button @click="handleForget">不记得</n-button>
         </n-space>
       </template>
+
+    </div>
+
+    <div class="fixed" v-show="checkWords.length != 0">
+      <n-button-group>
+        <n-button size="small" @click="handleDeleteWord">
+          删除
+        </n-button>
+      </n-button-group>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.container {
+  position: relative;
+
+  .fixed {
+    position: fixed;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+</style>

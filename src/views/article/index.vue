@@ -21,7 +21,12 @@
             <div class="group-btn">
               <n-button size="small" @click="handleRead(article.id)">阅读</n-button>
               <n-button disabled size="small" @click="handleEdit(article.id)">编辑</n-button>
-              <n-button size="small" @click="handleDelete(article.id)">删除</n-button>
+              <n-popconfirm positiveText="确定" negative-text="取消" @positive-click="handleDelete(article.id)">
+                确定删除？
+                <template #trigger>
+                  <n-button size="small">删除</n-button>
+                </template>
+              </n-popconfirm>
             </div>
           </template>
         </n-list-item>

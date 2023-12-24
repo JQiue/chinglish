@@ -1,12 +1,52 @@
 <script setup lang="ts">
-import { watch } from 'vue';
-import { ref, computed } from 'vue';
+import { ref, computed, watch, CSSProperties, onMounted, reactive } from 'vue';
+import { getReaderStyleConfig, setReaderStyleConfig } from '../localdata/index';
+import { unfamiliarWordsTable } from '../db/services';
 
 const props = defineProps<{ title?: string, content?: string }>();
 
+/** 阅读器元素  */
+const reader = ref<HTMLDivElement>();
+/** 段落元素  */
+const segment = ref<HTMLParagraphElement>();
+/** 标题  */
 const title = ref<string | undefined>('沉浸式阅读');
+/** 内容段落  */
 const contentSegment = ref<string[]>([]);
+/** 语音列表  */
 const voices = ref<Record<string, any>>([]);
+/** 阅读器样式  */
+const styleConfig = reactive<CSSProperties>({
+  fontSize: '1rem',
+  lineHeight: 1,
+  fontFamily: ''
+});
+
+const font = ref<'Default' | 'Helvetica' | 'Roboto'>('Default');
+const fontSize = ref();
+const lineHeight = ref();
+const selectedWord = ref('');
+const fontFamilyList = ref(['Default', 'Helvetica', 'Roboto'])
+
+const handleFontSize = (size: number) => {
+  styleConfig.fontSize = size + 'rem';
+}
+
+const handleLineHeight = (size: number) => {
+  styleConfig.lineHeight = size;
+}
+
+const handleFontFamily = (font: 'Default' | 'Helvetica' | 'Roboto') => {
+  if (font == 'Default') {
+    styleConfig.fontFamily = '';
+  }
+  if (font == 'Roboto') {
+    styleConfig.fontFamily = 'Roboto';
+  }
+  if (font == 'Helvetica') {
+    styleConfig.fontFamily = 'Helvetica';
+  }
+}
 
 /** 将内容处理成段 */
 function toSegment(content: string | undefined) {
@@ -37,15 +77,77 @@ watch(props, () => {
   title.value = props.title;
   toSegment(props.content);
 })
+
+watch(fontSize, (value) => {
+  handleFontSize(value);
+  setReaderStyleConfig(styleConfig);
+})
+
+watch(lineHeight, (value) => {
+  handleLineHeight(value)
+  setReaderStyleConfig(styleConfig);
+})
+
+watch(font, (value) => {
+  handleFontFamily(value);
+  setReaderStyleConfig(styleConfig);
+})
+
+onMounted(() => {
+  styleConfig.fontSize = getReaderStyleConfig()?.fontSize || 1;
+  styleConfig.lineHeight = getReaderStyleConfig()?.lineHeight || 1;
+  styleConfig.fontFamily = getReaderStyleConfig()?.fontFamily || '';
+  font.value = getReaderStyleConfig()?.fontFamily || 'Default';
+  fontSize.value = getReaderStyleConfig()?.fontSize || 1;
+  lineHeight.value = getReaderStyleConfig()?.lineHeight || 1;
+
+  segment.value?.addEventListener('mouseup', (e) => {
+    x.value = e.clientX;
+    y.value = e.clientY;
+    const selection = window.getSelection();
+    if (!selection) return;
+    const range = selection?.getRangeAt(0);
+    if (!range) return;
+    const text = range?.toString();
+    if (text.length == 0) return;
+    selectedWord.value = text?.trim();
+    showPopover.value = true;
+  });
+
+  reader.value?.addEventListener('dblclick', () => {
+    const selection = window.getSelection();
+    if (!selection) return;
+    if (selection.rangeCount !== 1) {
+      return;
+    }
+    const range = selection.getRangeAt(0);
+    const text = range.toString();
+    const matches = text.match(/^\w+(\s+)$/);
+    if (!matches) {
+      return;
+    }
+    const spaceCount = matches[1].length;
+    selection.removeAllRanges();
+    range.setEnd(range.endContainer, range.endOffset - spaceCount);
+    selection.addRange(range);
+  }, false)
+})
+
+const x = ref(0);
+const y = ref(0);
+const showPopover = ref(false);
 </script>
 
 <template>
-  <div class="reader-container">
+  <div class="reader-container" ref="reader">
     <div class="reader-top">
       <div></div>
       <div></div>
       <div class="btn-group">
-        <v-btn variant="text" :border="0" @click="speech(props.content ?? '')">朗读选项
+        <v-btn variant="text" :border="0" @click="speech(props.content ?? '')">
+          <span>
+            朗读选项
+          </span>
           <v-menu activator="parent" :close-on-content-click="false">
             速度
             <v-slider></v-slider>
@@ -54,14 +156,29 @@ watch(props, () => {
           </v-menu>
         </v-btn>
         <v-btn variant="text">
-          文本首选项
+          <span>
+            文本首选项
+          </span>
           <v-menu activator="parent" :close-on-content-click="false">
             文字大小
-            <v-slider></v-slider>
+            <v-slider v-model="fontSize" :thumb-size="14" :min="1" :max="1.8" step="0.2" show-ticks :ticks="{
+              1: '小',
+              1.4: '中',
+              1.8: '大',
+            }"></v-slider>
             文字间距
-            <v-slider></v-slider>
+            <v-slider v-model="lineHeight" :thumb-size="14" :min="0.8" :max="1.6" step="0.2 " show-ticks></v-slider>
             字体
-            <v-select density="compact" label="Select" :items="voiceNames" variant="outlined"></v-select>
+            <v-radio-group v-model="font" @update="handleFontFamily">
+              <v-radio v-for="font in fontFamilyList" :key="font" :label="font" :value="font"></v-radio>
+            </v-radio-group>
+            <!-- <n-radio-group v-model:value="font" name="radiogroup" @update:value="handleFontFamily">
+              <n-radio v-for="font in fontFamilyList" :key="font" :value="font">
+                {{ font }}
+              </n-radio>
+            </n-radio-group> -->
+            <!-- <v-select density="compact" label="Select" :items="fontFamilyList" variant="outlined"
+              @update:model-value="font"></v-select> -->
             背景
           </v-menu>
         </v-btn>
@@ -74,7 +191,12 @@ watch(props, () => {
           <h1 class="title">{{ title }}</h1>
         </div>
       </div>
-      <div class="reader-content-body">
+      <div class="reader-content-body" :style="styleConfig" ref="segment">
+        <n-popover :show="showPopover" :x="x" :y="y" trigger="manual">
+          <n-button quaternary size="small" @click="() => unfamiliarWordsTable.add(selectedWord)">
+            {{ selectedWord }} 添加到生词本
+          </n-button>
+        </n-popover>
         <p v-for="text in contentSegment">{{ text }}</p>
       </div>
     </div>
@@ -106,7 +228,7 @@ watch(props, () => {
 }
 
 .reader-content-body {
-  font-size: 114%;
+  font-family: inherit;
 }
 
 .title {

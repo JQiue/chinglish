@@ -17,10 +17,13 @@ interface FavoriteSentence {
   created_at: string;
 }
 
+/** 文章  */
 interface Article {
   id: number;
   title: string;
+  /** 作者 */
   author: string;
+  /** 内容 */
   content: string;
   /** 来源 */
   source: string;
