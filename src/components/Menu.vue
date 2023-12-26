@@ -1,3 +1,7 @@
+<template>
+  <n-menu v-model:value="activeKey" :options="menuOptions"></n-menu>
+</template>
+
 <script setup lang="ts">
 import { MenuOption } from "naive-ui";
 import { onMounted, ref, h } from "vue";
@@ -66,6 +70,21 @@ const menuOptions: MenuOption[] = [
         RouterLink,
         {
           to: {
+            path: "resource",
+          },
+        },
+        {
+          default: () => "资源",
+        }
+      ),
+    key: "resource",
+  },
+  {
+    label: () =>
+      h(
+        RouterLink,
+        {
+          to: {
             path: "about",
           },
         },
@@ -79,9 +98,5 @@ const menuOptions: MenuOption[] = [
 
 onMounted(async () => { });
 </script>
-
-<template>
-  <n-menu v-model:value="activeKey" :options="menuOptions"></n-menu>
-</template>
 
 <style scoped></style>

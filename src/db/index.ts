@@ -1,3 +1,5 @@
+import { fs } from "@tauri-apps/api";
+import { BaseDirectory } from "@tauri-apps/api/fs";
 import SQL, { QueryResult } from "tauri-plugin-sql-api";
 
 const mode = import.meta.env.MODE;
@@ -5,6 +7,91 @@ const mode = import.meta.env.MODE;
 const db = await SQL.load(
   mode == "development" ? "sqlite:test.chinglish.db" : "sqlite:chinglish.db"
 );
+
+export const dbPath = async () => {
+  return db.path;
+};
+
+/**
+ * @description: 导出数据
+ * @return {Promise<boolean>}
+ */
+export const dump = async () => {
+  let sqlText = "";
+  const tables = await select<ISqliteMaster[]>(
+    `SELECT * FROM sqlite_master WHERE type='table'`
+  );
+  for (const { name, sql } of tables) {
+    if (name == "unfamiliar_words") {
+      sqlText += sql + ";\n";
+      const data = await select<[]>(`select * from ${name}`);
+      for (const row of data) {
+        const keys = Object.keys(row);
+        const values = keys.map((key) => row[key]);
+        let valuesText = "";
+        for (const value of values) {
+          if (typeof value == "string") {
+            valuesText += `'${value}',`;
+          } else if (typeof value == "object") {
+            valuesText += `NULL,`;
+          } else {
+            valuesText += value + ",";
+          }
+        }
+        valuesText = valuesText.slice(0, valuesText.length - 1);
+        sqlText += `INSERT INTO ${name} (${Object.keys(row).join(
+          ","
+        )}) VALUES (${valuesText});\n`;
+      }
+    } else if (name == "favorite_sentences") {
+      sqlText += sql + ";\n";
+      const data = await select<[]>(`select * from ${name}`);
+      for (const row of data) {
+        const keys = Object.keys(row);
+        const values = keys.map((key) => row[key]);
+        let valuesText = "";
+        for (const value of values) {
+          if (typeof value == "string") {
+            valuesText += `'${value}',`;
+          } else if (typeof value == "object") {
+            valuesText += `NULL,`;
+          } else {
+            valuesText += value + ",";
+          }
+        }
+        valuesText = valuesText.slice(0, valuesText.length - 1);
+        sqlText += `INSERT INTO ${name} (${Object.keys(row).join(
+          ","
+        )}) VALUES (${valuesText});\n`;
+      }
+    } else if (name == "articles") {
+      sqlText += sql + ";\n";
+      const data = await select<[]>(`select * from ${name}`);
+      for (const row of data) {
+        const keys = Object.keys(row);
+        const values = keys.map((key) => row[key]);
+        let valuesText = "";
+        for (const value of values) {
+          if (typeof value == "string") {
+            valuesText += `'${value}',`;
+          } else if (typeof value == "object") {
+            valuesText += `NULL,`;
+          } else {
+            valuesText += value + ",";
+          }
+        }
+        valuesText = valuesText.slice(0, valuesText.length - 1);
+        sqlText += `INSERT INTO ${name} (${Object.keys(row).join(
+          ","
+        )}) VALUES (${valuesText});\n`;
+      }
+    }
+  }
+  fs.writeTextFile("export.sql", sqlText, {
+    dir: BaseDirectory.Desktop,
+  });
+  return true;
+};
 
 /**
  * @description: 执行 SELECT 语句

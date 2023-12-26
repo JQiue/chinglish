@@ -2,6 +2,7 @@
 import { ref, computed, watch, CSSProperties, onMounted, reactive } from 'vue';
 import { getReaderStyleConfig, setReaderStyleConfig } from '../localdata/index';
 import { unfamiliarWordsTable } from '../db/services';
+import { audio } from '@/helpers/audio';
 
 const props = defineProps<{ title?: string, content?: string }>();
 
@@ -193,9 +194,11 @@ const showPopover = ref(false);
       </div>
       <div class="reader-content-body" :style="styleConfig" ref="segment">
         <n-popover :show="showPopover" :x="x" :y="y" trigger="manual">
+          <span>{{ selectedWord }}</span>
           <n-button quaternary size="small" @click="() => unfamiliarWordsTable.add(selectedWord)">
-            {{ selectedWord }} 添加到生词本
+            添加到生词本
           </n-button>
+          <n-button quaternary size="small" @click="audio(selectedWord)">朗读</n-button>
         </n-popover>
         <p v-for="text in contentSegment">{{ text }}</p>
       </div>

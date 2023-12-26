@@ -1,3 +1,11 @@
+interface ISqliteMaster {
+  name: string;
+  rootpage: number;
+  sql: string;
+  tbl_name: string;
+  type: string;
+}
+
 interface UnfamiliarWord {
   id: number;
   word: string;
