@@ -1,13 +1,15 @@
 {
   "name": "chinglish",
   "private": true,
-  "version": "0.9.0",
+  "version": "0.9.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "patch": "npm version patch --no-git-tag-version",
     "minor": "npm version minor --no-git-tag-version",
+    "git:patch": "npm version patch",
+    "git:minor": "npm version minor",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build"
   },
