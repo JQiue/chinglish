@@ -3,6 +3,7 @@ import { ref, computed, watch, CSSProperties, onMounted, reactive } from 'vue';
 import { getReaderStyleConfig, setReaderStyleConfig } from '../localdata/index';
 import { unfamiliarWordsTable } from '../db/services';
 import { audio } from '@/helpers/audio';
+import { dictTable } from '@/db/dict';
 
 const props = defineProps<{ title?: string, content?: string }>();
 
@@ -57,22 +58,31 @@ function toSegment(content: string | undefined) {
   }
 }
 
-function speech(content: string) {
-  const speech = window.speechSynthesis;
-  voices.value = speech.getVoices();
-  const synth = new SpeechSynthesisUtterance();
-  synth.text = content;
-  synth.pitch = 1;
-  synth.rate = 1;
-  synth.lang = 'en-US'
-  // synth.voice
-  speech.speak(synth);
+const handleRead = (content: string) => {
+  audio(content);
 }
+
+// const speech = (content: string) => {
+//   const speech = window.speechSynthesis;
+//   voices.value = speech.getVoices();
+//   const synth = new SpeechSynthesisUtterance();
+//   synth.text = content;
+//   synth.pitch = 1;
+//   synth.rate = 1;
+//   synth.lang = 'en-US'
+//   // synth.voice
+//   speech.speak(synth);
+// }
 
 const voiceNames = computed(() => {
   const names = voices.value.map((item: any) => item.name);
   return names;
 })
+
+const handleQueryWord = async (word: string) => {
+  const data = await dictTable.getWord(word);
+  console.log(data);
+}
 
 watch(props, () => {
   title.value = props.title;
@@ -145,7 +155,7 @@ const showPopover = ref(false);
       <div></div>
       <div></div>
       <div class="btn-group">
-        <v-btn variant="text" :border="0" @click="speech(props.content ?? '')">
+        <v-btn variant="text" :border="0" @click="handleRead(props.content ?? '')">
           <span>
             朗读选项
           </span>
@@ -199,6 +209,7 @@ const showPopover = ref(false);
             添加到生词本
           </n-button>
           <n-button quaternary size="small" @click="audio(selectedWord)">朗读</n-button>
+          <n-button quaternary size="small" @click="handleQueryWord(selectedWord)">查询</n-button>
         </n-popover>
         <p v-for="text in contentSegment">{{ text }}</p>
       </div>

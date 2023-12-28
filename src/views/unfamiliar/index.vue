@@ -3,6 +3,7 @@
 
     <div class="top">
       <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="end">
+        <v-tab :value="'dict'">词典</v-tab>
         <v-tab :value="'list'">列表</v-tab>
         <v-tab :value="'card'">卡片</v-tab>
         <v-tab :value="'review'">复习</v-tab>
@@ -10,7 +11,19 @@
     </div>
 
     <div class="content">
-
+      <template v-if="tab == 'dict'">
+        <n-input @input="handleInput"></n-input>
+        <n-list hoverable>
+          <n-list-item v-for="word in queryWords">
+            <n-thing content-style="font-weight: 600">
+              {{ word.word }}
+              <div>{{ word.phonetic }}</div>
+              <div>{{ word.translation }}</div>
+              <div>{{ word.definition }}</div>
+            </n-thing>
+          </n-list-item>
+        </n-list>
+      </template>
       <template v-if="tab == 'list'">
         <n-checkbox-group v-model:value="checkWords" @update:value="handleCheckUpdate">
           <n-list hoverable>
@@ -54,11 +67,9 @@
     </div>
 
     <div class="fixed" v-show="checkWords.length != 0">
-      <n-button-group>
-        <n-button size="small" @click="handleDeleteWord">
-          删除
-        </n-button>
-      </n-button-group>
+      <n-button size="small" type="error" @click="handleDeleteWord">
+        删除
+      </n-button>
     </div>
   </div>
 </template>
@@ -68,13 +79,15 @@ import { ref, onMounted } from 'vue';
 import { unfamiliarWordsTable } from '@/db/services.ts';
 import { CarouselInst } from 'naive-ui';
 import { audio } from '@/helpers/audio';
+import { dictTable } from '@/db/dict';
 
-const tab = ref('list');
+const tab = ref('dict');
 const words = ref<UnfamiliarWord[]>([]);
 const window = ref(0);
 const review_carousel = ref<CarouselInst | null>();
 const currentIndexOfCarousel = ref(0);
 const checkWords = ref([]);
+const queryWords = ref<any[]>([]);
 
 const handleGetWords = async () => {
   words.value = await unfamiliarWordsTable.get();
@@ -89,6 +102,11 @@ const handleRemember = async () => {
   await unfamiliarWordsTable.updateProficiency(id, '+');
   review_carousel.value?.next();
   await handleGetWords();
+}
+const handleInput = async (word: string) => {
+  queryWords.value.length = 0;
+  const list = await dictTable.getLikeWord(word)
+  queryWords.value = list;
 }
 
 const handleForget = async () => {
@@ -106,6 +124,7 @@ const handleDeleteWord = async () => {
   checkWords.value.forEach(async value => {
     await unfamiliarWordsTable.delete(value)
   });
+  checkWords.value.length = 0;
   await handleGetWords();
 }
 

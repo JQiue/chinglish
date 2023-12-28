@@ -14,14 +14,25 @@
 </template>
 
 <script setup lang="ts">
+import { BaseDirectory, exists, writeBinaryFile } from '@tauri-apps/api/fs';
 import { ref } from 'vue';
 
 const resources = ref([{
-  title: '新概念英语第一册',
-  url: "url"
+  title: '字典',
+  url: "http://arch.com/d/%E4%B8%8B%E8%BD%BD/dict.db"
 }])
 
-const handleDownload = async (_url: string) => {
+const handleDownload = async (url: string) => {
+  const has = await exists("dict.db", { dir: BaseDirectory.App });
+  if (has) {
+    console.log("存在");
+    return
+  }
+  const resp = await fetch(url)
+  const buf = await resp.arrayBuffer();
+  writeBinaryFile("dict.db", buf, {
+    dir: BaseDirectory.App
+  });
 }
 </script>
 
