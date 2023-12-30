@@ -1,14 +1,5 @@
 <script setup lang="ts">
 import Menu from '@/components/Menu.vue';
-import { resolveResource } from '@tauri-apps/api/path'
-// import { readBinaryFile, } from '@tauri-apps/api/fs'
-import { onMounted } from 'vue';
-
-onMounted(async () => {
-  const resourcePath = await resolveResource('resource/dict.db')
-  console.log(resourcePath);
-  // const langDe = await readBinaryFile(resourcePath)
-})
 </script>
 
 <template>

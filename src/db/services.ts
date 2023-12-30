@@ -9,7 +9,6 @@ export const updateProficiency = async (id: number, opreator: "+" | "-") => {
 
 /** unfamiliar_words 表操作类 */
 class UnfamiliarWordsTable {
-  constructor() {}
   /** 增加 */
   async add(word: string) {
     return await execute(
@@ -39,7 +38,6 @@ class UnfamiliarWordsTable {
 
 /** articles 表操作类 */
 class ArticlesTable {
-  constructor() {}
   /** 增加 */
   async add(
     title: string,
@@ -77,5 +75,35 @@ class ArticlesTable {
   }
 }
 
+class WordFreqTable {
+  async has(word: string) {
+    const data = await select<WordFreq[]>(
+      `SELECT * FROM word_freq where word=?`,
+      [word]
+    );
+    return data.length > 0;
+  }
+  async add(word: string) {
+    if (await this.has(word)) {
+      return await execute(
+        `UPDATE word_freq SET frequency=frequency+1 where word=?`,
+        [word]
+      );
+    } else {
+      return await execute(`INSERT INTO word_freq (word) VALUES(?)`, [word]);
+    }
+  }
+  async delete(id: number) {
+    return await execute(`DELETE FROM word_freq where id=?`, [id]);
+  }
+  async getWordFreqStat(limit: number = 10) {
+    return await select<WordFreq[]>(
+      `SELECT DISTINCT word,frequency FROM word_freq ORDER BY frequency DESC LIMIT ?`,
+      [limit]
+    );
+  }
+}
+
 export const unfamiliarWordsTable = new UnfamiliarWordsTable();
 export const articlesTable = new ArticlesTable();
+export const wordfreqTable = new WordFreqTable();

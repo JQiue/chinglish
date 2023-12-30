@@ -23,19 +23,19 @@ const menuOptions: MenuOption[] = [
       ),
     key: "read",
   },
-  {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: {
-            path: "rss",
-          },
-        },
-        { default: () => "RSS" }
-      ),
-    key: "rss",
-  },
+  // {
+  //   label: () =>
+  //     h(
+  //       RouterLink,
+  //       {
+  //         to: {
+  //           path: "rss",
+  //         },
+  //       },
+  //       { default: () => "RSS" }
+  //     ),
+  //   key: "rss",
+  // },
   {
     label: () =>
       h(
@@ -63,6 +63,19 @@ const menuOptions: MenuOption[] = [
         }
       ),
     key: "article",
+  },
+  {
+    label: () =>
+      h(
+        RouterLink,
+        {
+          to: {
+            path: "statistics",
+          },
+        },
+        { default: () => "统计" }
+      ),
+    key: "statistics",
   },
   {
     label: () =>

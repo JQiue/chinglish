@@ -147,5 +147,11 @@ export function initTable() {
     collection TEXT,
     read_count INTEGER DEFAULT 0,
     created_at DATETIME
-  );`);
+  );
+  CREATE TABLE IF NOT EXISTS word_freq (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    word TEXT,
+    frequency INTEGER DEFAULT 1
+  );
+  `);
 }

@@ -14,16 +14,17 @@
     "tauri:build": "tauri build"
   },
   "dependencies": {
+    "@mdi/font": "^7.3.67",
     "@tauri-apps/api": "^1.4.0",
     "@vueuse/core": "^10.7.0",
     "dayjs": "^1.11.10",
+    "echarts": "^5.4.3",
     "naive-ui": "^2.36.0",
     "tauri-plugin-sql-api": "github:tauri-apps/tauri-plugin-sql#v1",
     "vfonts": "^0.0.3",
     "vite-plugin-vuetify": "^2.0.1",
     "vue": "^3.3.13",
     "vue-router": "^4.2.5",
-    "@mdi/font": "^7.3.67",
     "vuetify": "^3.4.8"
   },
   "devDependencies": {

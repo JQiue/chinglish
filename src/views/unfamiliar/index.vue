@@ -105,8 +105,10 @@ const handleRemember = async () => {
 }
 const handleInput = async (word: string) => {
   queryWords.value.length = 0;
-  const list = await dictTable.getLikeWord(word)
-  queryWords.value = list;
+  if (dictTable) {
+    const list = await dictTable.getLikeWord(word)
+    queryWords.value = list;
+  }
 }
 
 const handleForget = async () => {

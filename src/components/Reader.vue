@@ -4,6 +4,7 @@ import { getReaderStyleConfig, setReaderStyleConfig } from '../localdata/index';
 import { unfamiliarWordsTable } from '../db/services';
 import { audio } from '@/helpers/audio';
 import { dictTable } from '@/db/dict';
+import Segment from '../components/Segment.vue';
 
 const props = defineProps<{ title?: string, content?: string }>();
 
@@ -23,12 +24,14 @@ const styleConfig = reactive<CSSProperties>({
   lineHeight: 1,
   fontFamily: ''
 });
-
 const font = ref<'Default' | 'Helvetica' | 'Roboto'>('Default');
 const fontSize = ref();
 const lineHeight = ref();
 const selectedWord = ref('');
-const fontFamilyList = ref(['Default', 'Helvetica', 'Roboto'])
+const fontFamilyList = ref(['Default', 'Helvetica', 'Roboto']);
+const x = ref(0);
+const y = ref(0);
+const showPopover = ref(false);
 
 const handleFontSize = (size: number) => {
   styleConfig.fontSize = size + 'rem';
@@ -80,8 +83,10 @@ const voiceNames = computed(() => {
 })
 
 const handleQueryWord = async (word: string) => {
-  const data = await dictTable.getWord(word);
-  console.log(data);
+  if (dictTable) {
+    const data = await dictTable.getWord(word);
+    console.log(data);
+  }
 }
 
 watch(props, () => {
@@ -144,9 +149,7 @@ onMounted(() => {
   }, false)
 })
 
-const x = ref(0);
-const y = ref(0);
-const showPopover = ref(false);
+
 </script>
 
 <template>
@@ -211,7 +214,7 @@ const showPopover = ref(false);
           <n-button quaternary size="small" @click="audio(selectedWord)">朗读</n-button>
           <n-button quaternary size="small" @click="handleQueryWord(selectedWord)">查询</n-button>
         </n-popover>
-        <p v-for="text in contentSegment">{{ text }}</p>
+        <Segment v-for="segment in contentSegment" :segment="segment" :key="segment"></Segment>
       </div>
     </div>
     <div class="reader-bottom">

@@ -1,10 +1,9 @@
+import { BaseDirectory, exists } from "@tauri-apps/api/fs";
 import SQL from "tauri-plugin-sql-api";
-
-const db = await SQL.load("sqlite:dict.db");
 
 class DictTable {
   db: SQL;
-  constructor() {
+  constructor(db: SQL) {
     this.db = db;
   }
   async select<T>(sql: string, bindValues?: any[]): Promise<T> {
@@ -24,4 +23,19 @@ class DictTable {
   }
 }
 
-export const dictTable = new DictTable();
+const initDictTable = async () => {
+  const has = await exists("dict.db", {
+    dir: BaseDirectory.App,
+  });
+  if (has) {
+    return SQL.load("sqlite:dict.db").then((db) => {
+      return new DictTable(db);
+    });
+  } else {
+    return undefined;
+  }
+};
+
+const dictTable = await initDictTable();
+
+export { dictTable };

@@ -1,21 +1,20 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod command;
+mod helper;
 mod tray;
 
+use command::{download, greet};
 use tray::system_tray;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
 
 fn main() {
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
-        .plugin(tauri_plugin_sql::Builder::default().build())
-        .system_tray(system_tray())
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+  tauri::Builder::default()
+    .invoke_handler(tauri::generate_handler![greet, download])
+    .plugin(tauri_plugin_sql::Builder::default().build())
+    .system_tray(system_tray())
+    .run(tauri::generate_context!())
+    .expect("error while running tauri application");
 }

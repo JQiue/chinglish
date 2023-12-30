@@ -25,6 +25,12 @@ interface FavoriteSentence {
   created_at: string;
 }
 
+interface WordFreq {
+  id: number;
+  word: string;
+  frequency: number;
+}
+
 /** 文章  */
 interface Article {
   id: number;
