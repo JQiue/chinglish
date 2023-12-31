@@ -120,6 +120,7 @@ onMounted(() => {
 
   /** 选中抬起时弹出 */
   segment.value?.addEventListener('mouseup', (e) => {
+    showPopover.value = false;
     const selection = window.getSelection();
     if (!selection) return;
     const range = selection?.getRangeAt(0);
