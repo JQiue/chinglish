@@ -61,6 +61,7 @@ function toSegment(content: string | undefined) {
   }
 }
 
+/** 朗读 */
 const handleRead = (content: string) => {
   audio(content);
 }
@@ -117,9 +118,8 @@ onMounted(() => {
   fontSize.value = getReaderStyleConfig()?.fontSize || 1;
   lineHeight.value = getReaderStyleConfig()?.lineHeight || 1;
 
+  /** 选中抬起时弹出 */
   segment.value?.addEventListener('mouseup', (e) => {
-    x.value = e.clientX;
-    y.value = e.clientY;
     const selection = window.getSelection();
     if (!selection) return;
     const range = selection?.getRangeAt(0);
@@ -127,9 +127,12 @@ onMounted(() => {
     const text = range?.toString();
     if (text.length == 0) return;
     selectedWord.value = text?.trim();
+    x.value = e.clientX;
+    y.value = e.clientY;
     showPopover.value = true;
   });
 
+  /** 处理双击选中 */
   reader.value?.addEventListener('dblclick', () => {
     const selection = window.getSelection();
     if (!selection) return;
@@ -148,8 +151,6 @@ onMounted(() => {
     selection.addRange(range);
   }, false)
 })
-
-
 </script>
 
 <template>
@@ -158,6 +159,25 @@ onMounted(() => {
       <div></div>
       <div></div>
       <div class="btn-group">
+        <!-- <n-button-group size="small">
+          <n-button type="default">
+            <span>
+              朗读选项
+            </span>
+            <v-menu activator="parent" :close-on-content-click="false">
+              速度
+              <v-slider></v-slider>
+              选择语音
+              <v-select density="compact" label="Select" :items="voiceNames" variant="outlined"></v-select>
+            </v-menu>
+          </n-button>
+          <n-button type="default">
+            文本首选项
+          </n-button>
+          <n-button type="default">
+            阅读偏好
+          </n-button>
+        </n-button-group> -->
         <v-btn variant="text" :border="0" @click="handleRead(props.content ?? '')">
           <span>
             朗读选项
@@ -196,7 +216,7 @@ onMounted(() => {
             背景
           </v-menu>
         </v-btn>
-        <v-btn variant="text">阅读偏好</v-btn>
+        <!-- <v-btn variant="text">阅读偏好</v-btn> -->
       </div>
     </div>
     <div class="reader-content-container">
@@ -228,7 +248,6 @@ onMounted(() => {
 
 <style scoped>
 .reader-container {
-  font-family: "Sitka Text", Georgia, Cambria, Calibri;
   line-height: 160%;
   background-color: #F9F5E9;
   min-height: 100vh;
@@ -242,10 +261,6 @@ onMounted(() => {
   padding-bottom: 2.444rem;
   margin-left: auto;
   margin-right: auto;
-}
-
-.reader-content-body {
-  font-family: inherit;
 }
 
 .title {

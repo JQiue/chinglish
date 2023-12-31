@@ -9,8 +9,19 @@ export const updateProficiency = async (id: number, opreator: "+" | "-") => {
 
 /** unfamiliar_words 表操作类 */
 class UnfamiliarWordsTable {
+  /** 存在 */
+  async has(word: string) {
+    const results = await select<UnfamiliarWord[]>(
+      `select * from unfamiliar_words where word=?`,
+      [word]
+    );
+    return results.length > 0;
+  }
   /** 增加 */
   async add(word: string) {
+    if (await this.has(word)) {
+      return;
+    }
     return await execute(
       `INSERT INTO unfamiliar_words(word, proficiency, review_count, created_at) VALUES(?,?,?,?)`,
       [word, 0, 0, nowDatetime()]
@@ -70,6 +81,7 @@ class ArticlesTable {
     }
     return await execute(sql, [id]);
   }
+  /** 获取文章 ID */
   async getById(id: number) {
     return await select<Article[]>(`SELECT * FROM articles WHERE id=?`, [id]);
   }

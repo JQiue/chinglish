@@ -1,14 +1,24 @@
 <template>
-  <span> {{ props.token }}&nbsp;</span>
+  <span :style="style"> {{ props.token }}&nbsp;</span>
 </template>
 
 <script setup lang="ts">
-import { wordfreqTable } from '@/db/services';
+import { unfamiliarWordsTable, wordfreqTable } from '@/db/services';
+import { CSSProperties, reactive } from 'vue';
 import { onMounted } from 'vue';
 
 const props = defineProps<{ token: string }>();
-onMounted(() => {
+
+const style = reactive<CSSProperties>({
+  fontWeight: ''
+});
+
+
+onMounted(async () => {
   wordfreqTable.add(props.token.replace(/[,|?|!.]/, ''));
+  if (await unfamiliarWordsTable.has(props.token)) {
+    style.fontWeight = 600
+  }
 })
 </script>
 

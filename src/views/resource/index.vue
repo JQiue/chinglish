@@ -15,6 +15,7 @@
 
 <script setup lang="ts">
 import { invoke } from '@tauri-apps/api';
+import { BaseDirectory, exists } from '@tauri-apps/api/fs';
 import { ref } from 'vue';
 
 const downloading = ref(false);
@@ -25,18 +26,13 @@ const resources = ref([{
 
 const handleDownload = async (url: string) => {
   downloading.value = true
+  const has = await exists("dict.db", { dir: BaseDirectory.App });
+  if (has) {
+    console.log("存在");
+    return
+  }
   console.log(await invoke("download", { url }));
   downloading.value = false;
-  // const has = await exists("dict.db", { dir: BaseDirectory.App });
-  // if (has) {
-  //   console.log("存在");
-  //   return
-  // }
-  // const resp = await fetch(url)
-  // const buf = await resp.arrayBuffer();
-  // writeBinaryFile("dict.db", buf, {
-  //   dir: BaseDirectory.App
-  // });
 }
 </script>
 
