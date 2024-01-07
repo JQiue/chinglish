@@ -47,3 +47,24 @@ interface Article {
   read_count: number;
   created_at: string;
 }
+
+interface Dict {
+  /** 单词名称 */
+  word: string;
+  /** 音标 */
+  phonetic: string;
+  /** 当代语料库词频顺序 */
+  frq: string;
+  /** 单词释义（中文），每行一个释义 */
+  translation: string;
+  /** 英国国家语料库词频顺序 */
+  bnc: string;
+  /** 单词释义（英文），每行一个释义  */
+  definition: string;
+  /** 时态复数等变换  */
+  exchange: string;
+  /** 字符串标签：zk/中考，gk/高考，cet4/四级 等等标签，空格分割  */
+  tag: string;
+  /** 词语位置 */
+  pos: string;
+}

@@ -13,11 +13,15 @@ class DictTable {
       throw error;
     }
   }
+  /** 准确查询 */
   async getWord(word: string) {
-    return await this.select("select * from dict where word = ?", [word]);
+    return await this.select<Dict[]>("select * from dict where word = ?", [
+      word,
+    ]);
   }
+  /** 模糊查询 */
   async getLikeWord(word: string) {
-    return await this.select<any[]>(
+    return await this.select<Dict[]>(
       `select * from dict where word LIKE '%${word}%' LIMIT 7`
     );
   }

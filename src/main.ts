@@ -5,6 +5,7 @@ import { router } from "./router/index";
 import App from "./App.vue";
 import "@mdi/font/css/materialdesignicons.css";
 import "vuetify/styles";
+import "./styles.css";
 
 import { initTable } from "./db";
 

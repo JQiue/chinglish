@@ -1,5 +1,7 @@
 <template>
-  <n-menu v-model:value="activeKey" :options="menuOptions"></n-menu>
+  <div class="menu">
+    <n-menu v-model:value="activeKey" :options="menuOptions"></n-menu>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -109,7 +111,11 @@ const menuOptions: MenuOption[] = [
   },
 ];
 
-onMounted(async () => { });
 </script>
 
-<style scoped></style>
+<style scoped>
+.menu {
+  position: fixed;
+  width: 144px;
+}
+</style>

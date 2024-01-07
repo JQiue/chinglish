@@ -8,8 +8,6 @@ mod tray;
 use command::{download, greet};
 use tray::system_tray;
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-
 fn main() {
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![greet, download])

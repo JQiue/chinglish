@@ -1,7 +1,7 @@
 <template>
-  <div class="read">
-    <div class="prev" @click="handlePreviousArticle">上</div>
-    <div class="next" @click="handleNextArticle">下</div>
+  <div class="read" ref="read">
+    <div class="prev" @click="handlePreviousArticle" ref="prev">上</div>
+    <div class="next" @click="handleNextArticle" ref="next">下</div>
     <Reader :title="currentArticle?.title" :content="currentArticle?.content"></Reader>
   </div>
 </template>
@@ -12,9 +12,12 @@ import { getLastArticleId, saveLastArticleId } from '@/helpers/storage';
 import { onMounted, ref } from 'vue';
 import Reader from '@/components/Reader.vue';
 
+const read = ref<HTMLDivElement>();
 const articles = ref<Article[]>();
 const currentArticle = ref<Article>();
 
+
+/** 获取文章列表 */
 const getArticles = async () => {
   articles.value = await articlesTable.get();
 }
@@ -23,6 +26,7 @@ const hasArticleId = async () => {
   return localStorage.getItem('lastArticleId');
 }
 
+/** 获取当前文章索引 */
 const getCurrentArticleIndex = () => {
   if (articles.value && currentArticle.value) {
     return articles.value.findIndex((article) => {
@@ -55,6 +59,7 @@ const handleNextArticle = async () => {
   }
 }
 
+/** 更新当前文章 */
 const updateCurrentArticle = (index: number) => {
   if (articles.value) {
     currentArticle.value = articles.value[index];
@@ -63,6 +68,7 @@ const updateCurrentArticle = (index: number) => {
   }
 }
 
+/** 加载文章 */
 const loadArticle = async (hasArticle: boolean) => {
   if (hasArticle) {
     const id = Number(getLastArticleId());
@@ -81,6 +87,14 @@ const init = async () => {
   } else {
     await loadArticle(false);
   }
+  window.addEventListener("keydown", e => {
+    if (e.key == "ArrowUp") {
+      handlePreviousArticle()
+    }
+    if (e.key == "ArrowDown") {
+      handleNextArticle()
+    }
+  })
 }
 
 onMounted(async () => {
@@ -101,6 +115,8 @@ onMounted(async () => {
     align-items: center;
     transition: all 0.2s;
     opacity: 0;
+    width: 24px;
+    user-select: none;
   }
 
   .prev:hover,

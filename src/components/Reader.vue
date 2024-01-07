@@ -32,6 +32,8 @@ const fontFamilyList = ref(['Default', 'Helvetica', 'Roboto']);
 const x = ref(0);
 const y = ref(0);
 const showPopover = ref(false);
+const showDrawer = ref(false);
+const queryWords = ref<Dict[]>([]);
 
 const handleFontSize = (size: number) => {
   styleConfig.fontSize = size + 'rem';
@@ -85,8 +87,17 @@ const voiceNames = computed(() => {
 
 const handleQueryWord = async (word: string) => {
   if (dictTable) {
-    const data = await dictTable.getWord(word);
-    console.log(data);
+    const data = await dictTable.getLikeWord(word);
+    queryWords.value = data;
+    showDrawer.value = true;
+  }
+}
+
+const handleInput = async (word: string) => {
+  queryWords.value.length = 0;
+  if (dictTable) {
+    const list = await dictTable.getLikeWord(word)
+    queryWords.value = list;
   }
 }
 
@@ -239,12 +250,24 @@ onMounted(() => {
       </div>
     </div>
     <div class="reader-bottom">
-      <!-- <n-space justify="center">
-        <n-button block @click="handlePreviousArticle">上一篇</n-button>
-        <n-button block @click="handleNextArticle">下一篇</n-button>
-      </n-space> -->
     </div>
   </div>
+
+  <n-drawer v-model:show="showDrawer" :width="302" placement="right">
+    <n-drawer-content title="查询">
+      <n-input @input="handleInput"></n-input>
+      <n-list hoverable>
+        <n-list-item v-for="word in queryWords">
+          <n-thing>
+            <div style="font-weight: 600;">{{ word.word }}</div>
+            <div>音标：{{ word.phonetic }}</div>
+            <div>释义：{{ word.translation }}</div>
+            <div>释义（英）：{{ word.definition }}</div>
+          </n-thing>
+        </n-list-item>
+      </n-list>
+    </n-drawer-content>
+  </n-drawer>
 </template>
 
 <style scoped>
