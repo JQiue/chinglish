@@ -24,7 +24,8 @@ const wordFreq = () => {
 
 /** 标记单词 */
 const markToken = async () => {
-  if (await unfamiliarWordsTable.has(props.token)) {
+  const word = props.token.replace(/[,|?|!.]/, '');
+  if (await unfamiliarWordsTable.has(word)) {
     style.fontWeight = 600
   }
 }

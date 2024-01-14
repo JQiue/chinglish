@@ -74,6 +74,6 @@ onMounted(async () => {
 
 <style scoped>
 .statistics {
-  height: 80vh;
+  height: 89vh;
 }
 </style>
