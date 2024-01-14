@@ -3,7 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import { unfamiliarWordsTable, wordfreqTable } from '@/db/services';
+import { unfamiliarWordsTable } from '@/db/services';
+import { addWord } from '@/store/wordFreq';
 import { CSSProperties, reactive } from 'vue';
 import { onMounted } from 'vue';
 
@@ -13,12 +14,24 @@ const style = reactive<CSSProperties>({
   fontWeight: ''
 });
 
+/** 统计词频 */
+const wordFreq = () => {
+  const word = props.token.replace(/[,|?|!.]/, '');
+  // wordfreqTable.add(word);
+  if (word.length == 0) return;
+  addWord(word);
+}
 
-onMounted(async () => {
-  wordfreqTable.add(props.token.replace(/[,|?|!.]/, ''));
+/** 标记单词 */
+const markToken = async () => {
   if (await unfamiliarWordsTable.has(props.token)) {
     style.fontWeight = 600
   }
+}
+
+onMounted(async () => {
+  wordFreq();
+  markToken();
 })
 </script>
 

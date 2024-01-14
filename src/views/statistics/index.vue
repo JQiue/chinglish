@@ -1,5 +1,6 @@
 <template>
   <n-select v-model:value="limit" :options="options" @update:value="handleChange" />
+  <n-button @click="handleClear">清除所有统计数据</n-button>
   <div class="statistics" id="statistics"> </div>
 </template>
 
@@ -30,9 +31,15 @@ const options = ref<SelectBaseOption[]>([
 ]);
 
 const handleChange = () => {
+  draw();
+}
+
+const handleClear = () => {
+  wordfreqTable.clear();
   draw()
 }
 
+/** 绘制图表 */
 const draw = async () => {
   const data = await wordfreqTable.getWordFreqStat(limit.value);
   const wordData = data.map((value) => value.word);
@@ -67,6 +74,6 @@ onMounted(async () => {
 
 <style scoped>
 .statistics {
-  height: 100vh;
+  height: 80vh;
 }
 </style>

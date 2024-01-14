@@ -49,7 +49,7 @@ class UnfamiliarWordsTable {
 
 /** articles 表操作类 */
 class ArticlesTable {
-  /** 增加 */
+  /** 添加 */
   async add(
     title: string,
     author: string,
@@ -67,10 +67,14 @@ class ArticlesTable {
     return await execute(`DELETE FROM articles where id=?`, [id]);
   }
   /** 更新 */
-  async update() {}
+  async update({ id, title, author, content, collection, source }: Article) {
+    return await execute(
+      `UPDATE articles SET title=?,author=?,content=?,collection=?,source=? where id=?`,
+      [title, author, content, collection, source, id]
+    );
+  }
   /** 获取文章 */
-  async get(id?: number) {
-    if (id) return await this.getById(id);
+  async get() {
     return await select<Article[]>(`SELECT * FROM articles`);
   }
   /** 更新阅读次数 */
@@ -81,12 +85,18 @@ class ArticlesTable {
     }
     return await execute(sql, [id]);
   }
-  /** 获取文章 ID */
+  /** 根据文章 ID 获取*/
   async getById(id: number) {
-    return await select<Article[]>(`SELECT * FROM articles WHERE id=?`, [id]);
+    const results = await select<Article[]>(
+      `SELECT * FROM articles WHERE id=?`,
+      [id]
+    );
+    if (results.length > 0) return results[0];
+    return null;
   }
 }
 
+/** word_freq 表操作类 */
 class WordFreqTable {
   async has(word: string) {
     const data = await select<WordFreq[]>(
@@ -113,6 +123,10 @@ class WordFreqTable {
       `SELECT DISTINCT word,frequency FROM word_freq ORDER BY frequency DESC LIMIT ?`,
       [limit]
     );
+  }
+  /** 清除所有数据 */
+  async clear() {
+    return await execute(`DELETE FROM word_freq`);
   }
 }
 

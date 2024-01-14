@@ -11,6 +11,7 @@ import { articlesTable } from '@/db/services';
 import { getLastArticleId, saveLastArticleId } from '@/helpers/storage';
 import { onMounted, ref } from 'vue';
 import Reader from '@/components/Reader.vue';
+import { pushWord } from '../../store/wordFreq';
 
 const read = ref<HTMLDivElement>();
 const articles = ref<Article[]>();
@@ -22,6 +23,7 @@ const getArticles = async () => {
   articles.value = await articlesTable.get();
 }
 
+/** 是否存在文章 id */
 const hasArticleId = async () => {
   return localStorage.getItem('lastArticleId');
 }
@@ -56,6 +58,7 @@ const handleNextArticle = async () => {
     if (currentArticle.value) {
       saveLastArticleId(currentArticle.value.id.toString())
     }
+    pushWord()
   }
 }
 

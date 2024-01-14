@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { MenuOption } from "naive-ui";
-import { onMounted, ref, h } from "vue";
+import { ref, h } from "vue";
 import { RouterLink } from "vue-router";
 
 const activeKey = ref<string | null>("read");

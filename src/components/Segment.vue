@@ -10,6 +10,7 @@ import Token from '../components/Token.vue';
 
 const props = defineProps<{ segment: string }>();
 const tokens = ref<string[]>();
+
 onMounted(() => {
   tokens.value = props.segment.trim().split(" ");
 })

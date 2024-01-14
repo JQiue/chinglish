@@ -85,6 +85,7 @@ const voiceNames = computed(() => {
   return names;
 })
 
+/** 处理查询单词 */
 const handleQueryWord = async (word: string) => {
   if (dictTable) {
     const data = await dictTable.getLikeWord(word);
@@ -93,6 +94,7 @@ const handleQueryWord = async (word: string) => {
   }
 }
 
+/** 处理单词输入 */
 const handleInput = async (word: string) => {
   queryWords.value.length = 0;
   if (dictTable) {
