@@ -75,7 +75,10 @@ const updateCurrentArticle = (index: number) => {
 const loadArticle = async (hasArticle: boolean) => {
   if (hasArticle) {
     const id = Number(getLastArticleId());
-    currentArticle.value = (await articlesTable.get(id))[0];
+    const article = await articlesTable.getById(id);
+    if (article) {
+      currentArticle.value = article;
+    }
   } else {
     if (currentArticle.value) {
       saveLastArticleId(currentArticle.value.id.toString())
