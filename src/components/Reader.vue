@@ -1,3 +1,90 @@
+<template>
+  <div class="reader-container" ref="reader">
+    <div class="reader-top">
+      <div></div>
+      <div></div>
+      <div class="btn-group">
+        <n-button quaternary circle @click="handleRead(props.content ?? '')">
+          <template #icon>
+            <VoiceIcon></VoiceIcon>
+          </template>
+        </n-button>
+        <n-button quaternary circle @click="handleShowSettingsDrawerClick">
+          <template #icon>
+            <SettingsIcon></SettingsIcon>
+          </template>
+        </n-button>
+      </div>
+    </div>
+    <div class="reader-content-container">
+      <div class="reader-header">
+        <div class="reader-header-content">
+          <h1 class="title">{{ title }}</h1>
+        </div>
+      </div>
+      <div class="reader-content-body" :style="styleConfig" ref="segment">
+        <n-popover :show="showPopover" :x="x" :y="y" trigger="manual">
+          <span>{{ selectedWord }}</span>
+          <n-button quaternary size="small" @click="() => unfamiliarWordsTable.add(selectedWord)">
+            添加到生词本
+          </n-button>
+          <n-button quaternary size="small" @click="audio(selectedWord)">朗读</n-button>
+          <n-button quaternary size="small" @click="handleQueryWord(selectedWord)">查询</n-button>
+        </n-popover>
+        <Segment v-for="segment in contentSegment" :segment="segment" :key="segment"></Segment>
+      </div>
+    </div>
+    <div class="reader-bottom">
+    </div>
+  </div>
+  <n-drawer v-model:show="showSettingsDrawer" :width="302" placement="right">
+    <n-drawer-content title="设置">
+      <h3>
+        朗读选项
+      </h3>
+      <p>速度</p>
+      <n-slider disabled />
+      <p>语音</p>
+      <v-select density="compact" label="Select" :items="voiceNames" variant="outlined"></v-select>
+      <h3>
+        文本首选项
+      </h3>
+      <p>文字大小</p>
+      <n-slider v-model:value="fontSize" :min="1" :max="1.8" :step="0.2" :marks="{
+        1: '小',
+        1.4: '中',
+        1.8: '大',
+      }" />
+      <p>文字间距</p>
+      <n-slider v-model:value="lineHeight" :min="0.8" :max="1.6" :step="0.2"></n-slider>
+      <p>字体</p>
+      <n-radio-group v-model:value="font" name="radiogroup">
+        <n-space vertical>
+          <n-radio v-for="font in fontFamilyList" :key="font.value" :value="font.value">
+            {{ font.label }}
+          </n-radio>
+        </n-space>
+      </n-radio-group>
+      <p>背景</p>
+    </n-drawer-content>
+  </n-drawer>
+  <n-drawer v-model:show="showDrawer" :width="302" placement="right">
+    <n-drawer-content title="查询">
+      <n-input @input="handleInput"></n-input>
+      <n-list hoverable>
+        <n-list-item v-for="    word     in     queryWords    ">
+          <n-thing>
+            <div style="font-weight: 600;">{{ word.word }}</div>
+            <div>音标：{{ word.phonetic }}</div>
+            <div>释义：{{ word.translation }}</div>
+            <div>释义（英）：{{ word.definition }}</div>
+          </n-thing>
+        </n-list-item>
+      </n-list>
+    </n-drawer-content>
+  </n-drawer>
+</template>
+
 <script setup lang="ts">
 import { ref, computed, watch, CSSProperties, onMounted, reactive } from 'vue';
 import { getReaderStyleConfig, setReaderStyleConfig } from '../localdata/index';
@@ -5,6 +92,8 @@ import { unfamiliarWordsTable } from '../db/services';
 import { audio } from '@/helpers/audio';
 import { dictTable } from '@/db/dict';
 import Segment from '../components/Segment.vue';
+import SettingsIcon from '../components/icons/SettingsIcon.vue';
+import VoiceIcon from '../components/icons/VoiceIcon.vue';
 
 const props = defineProps<{ title?: string, content?: string }>();
 
@@ -25,14 +114,19 @@ const styleConfig = reactive<CSSProperties>({
   fontFamily: ''
 });
 const font = ref<'Default' | 'Helvetica' | 'Roboto'>('Default');
-const fontSize = ref();
+const fontSize = ref(1);
 const lineHeight = ref();
 const selectedWord = ref('');
-const fontFamilyList = ref(['Default', 'Helvetica', 'Roboto']);
+const fontFamilyList = ref([
+  { value: 'Default', label: 'Default' },
+  { value: 'Helvetica', label: 'Helvetica' },
+  { value: 'Roboto', label: 'Roboto' },
+]);
 const x = ref(0);
 const y = ref(0);
 const showPopover = ref(false);
 const showDrawer = ref(false);
+const showSettingsDrawer = ref(false);
 const queryWords = ref<Dict[]>([]);
 
 const handleFontSize = (size: number) => {
@@ -84,6 +178,10 @@ const voiceNames = computed(() => {
   const names = voices.value.map((item: any) => item.name);
   return names;
 })
+
+const handleShowSettingsDrawerClick = () => {
+  showSettingsDrawer.value = true;
+}
 
 /** 处理查询单词 */
 const handleQueryWord = async (word: string) => {
@@ -166,111 +264,6 @@ onMounted(() => {
   }, false)
 })
 </script>
-
-<template>
-  <div class="reader-container" ref="reader">
-    <div class="reader-top">
-      <div></div>
-      <div></div>
-      <div class="btn-group">
-        <!-- <n-button-group size="small">
-          <n-button type="default">
-            <span>
-              朗读选项
-            </span>
-            <v-menu activator="parent" :close-on-content-click="false">
-              速度
-              <v-slider></v-slider>
-              选择语音
-              <v-select density="compact" label="Select" :items="voiceNames" variant="outlined"></v-select>
-            </v-menu>
-          </n-button>
-          <n-button type="default">
-            文本首选项
-          </n-button>
-          <n-button type="default">
-            阅读偏好
-          </n-button>
-        </n-button-group> -->
-        <v-btn variant="text" :border="0" @click="handleRead(props.content ?? '')">
-          <span>
-            朗读选项
-          </span>
-          <v-menu activator="parent" :close-on-content-click="false">
-            速度
-            <v-slider></v-slider>
-            选择语音
-            <v-select density="compact" label="Select" :items="voiceNames" variant="outlined"></v-select>
-          </v-menu>
-        </v-btn>
-        <v-btn variant="text">
-          <span>
-            文本首选项
-          </span>
-          <v-menu activator="parent" :close-on-content-click="false">
-            文字大小
-            <v-slider v-model="fontSize" :thumb-size="14" :min="1" :max="1.8" step="0.2" show-ticks :ticks="{
-              1: '小',
-              1.4: '中',
-              1.8: '大',
-            }"></v-slider>
-            文字间距
-            <v-slider v-model="lineHeight" :thumb-size="14" :min="0.8" :max="1.6" step="0.2 " show-ticks></v-slider>
-            字体
-            <v-radio-group v-model="font" @update="handleFontFamily">
-              <v-radio v-for="font in fontFamilyList" :key="font" :label="font" :value="font"></v-radio>
-            </v-radio-group>
-            <!-- <n-radio-group v-model:value="font" name="radiogroup" @update:value="handleFontFamily">
-              <n-radio v-for="font in fontFamilyList" :key="font" :value="font">
-                {{ font }}
-              </n-radio>
-            </n-radio-group> -->
-            <!-- <v-select density="compact" label="Select" :items="fontFamilyList" variant="outlined"
-              @update:model-value="font"></v-select> -->
-            背景
-          </v-menu>
-        </v-btn>
-        <!-- <v-btn variant="text">阅读偏好</v-btn> -->
-      </div>
-    </div>
-    <div class="reader-content-container">
-      <div class="reader-header">
-        <div class="reader-header-content">
-          <h1 class="title">{{ title }}</h1>
-        </div>
-      </div>
-      <div class="reader-content-body" :style="styleConfig" ref="segment">
-        <n-popover :show="showPopover" :x="x" :y="y" trigger="manual">
-          <span>{{ selectedWord }}</span>
-          <n-button quaternary size="small" @click="() => unfamiliarWordsTable.add(selectedWord)">
-            添加到生词本
-          </n-button>
-          <n-button quaternary size="small" @click="audio(selectedWord)">朗读</n-button>
-          <n-button quaternary size="small" @click="handleQueryWord(selectedWord)">查询</n-button>
-        </n-popover>
-        <Segment v-for="segment in contentSegment" :segment="segment" :key="segment"></Segment>
-      </div>
-    </div>
-    <div class="reader-bottom">
-    </div>
-  </div>
-
-  <n-drawer v-model:show="showDrawer" :width="302" placement="right">
-    <n-drawer-content title="查询">
-      <n-input @input="handleInput"></n-input>
-      <n-list hoverable>
-        <n-list-item v-for="word in queryWords">
-          <n-thing>
-            <div style="font-weight: 600;">{{ word.word }}</div>
-            <div>音标：{{ word.phonetic }}</div>
-            <div>释义：{{ word.translation }}</div>
-            <div>释义（英）：{{ word.definition }}</div>
-          </n-thing>
-        </n-list-item>
-      </n-list>
-    </n-drawer-content>
-  </n-drawer>
-</template>
 
 <style scoped>
 .reader-container {
