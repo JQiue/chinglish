@@ -16,6 +16,7 @@
         </n-button>
       </div>
     </div>
+
     <div class="reader-content-container">
       <div class="reader-header">
         <div class="reader-header-content">
@@ -24,7 +25,6 @@
       </div>
       <div class="reader-content-body" :style="styleConfig" ref="segment">
         <n-popover :show="showPopover" :x="x" :y="y" trigger="manual">
-          <span>{{ selectedWord }}</span>
           <n-button quaternary size="small" @click="() => unfamiliarWordsTable.add(selectedWord)">
             添加到生词本
           </n-button>
@@ -34,9 +34,15 @@
         <Segment v-for="segment in contentSegment" :segment="segment" :key="segment"></Segment>
       </div>
     </div>
+
     <div class="reader-bottom">
+      <n-space>
+        <span>{{ formatReadTime(readTime) }}</span>
+        <span v-show="selectedWord.length != 0">已选择 {{ selectedWord }}</span>
+      </n-space>
     </div>
   </div>
+
   <n-drawer v-model:show="showSettingsDrawer" :width="302" placement="right">
     <n-drawer-content title="设置">
       <h3>
@@ -68,6 +74,7 @@
       <p>背景</p>
     </n-drawer-content>
   </n-drawer>
+
   <n-drawer v-model:show="showDrawer" :width="302" placement="right">
     <n-drawer-content title="查询">
       <n-input @input="handleInput"></n-input>
@@ -90,32 +97,38 @@ import { ref, computed, watch, CSSProperties, onMounted, reactive } from 'vue';
 import { getReaderStyleConfig, setReaderStyleConfig } from '../localdata/index';
 import { unfamiliarWordsTable } from '../db/services';
 import { audio } from '@/helpers/audio';
+import { toNumber } from '@/helpers';
 import { dictTable } from '@/db/dict';
 import Segment from '../components/Segment.vue';
 import SettingsIcon from '../components/icons/SettingsIcon.vue';
 import VoiceIcon from '../components/icons/VoiceIcon.vue';
+import { count as countWord } from 'letter-count';
 
 const props = defineProps<{ title?: string, content?: string }>();
 
-/** 阅读器元素  */
+/** 阅读器元素引用  */
 const reader = ref<HTMLDivElement>();
-/** 段落元素  */
+/** 段落元素引用 */
 const segment = ref<HTMLParagraphElement>();
-/** 标题  */
+/** 标题 */
 const title = ref<string | undefined>('沉浸式阅读');
-/** 内容段落  */
+/** 内容段落 */
 const contentSegment = ref<string[]>([]);
-/** 语音列表  */
+/** 语音列表 */
 const voices = ref<Record<string, any>>([]);
-/** 阅读器样式  */
+/** 阅读器样式 */
 const styleConfig = reactive<CSSProperties>({
   fontSize: '1rem',
   lineHeight: 1,
   fontFamily: ''
 });
+/** 可用的 font-family */
 const font = ref<'Default' | 'Helvetica' | 'Roboto'>('Default');
-const fontSize = ref(1);
+/** 字体大小 */
+const fontSize = ref();
+/** 行间距 */
 const lineHeight = ref();
+/** 选中的单词 */
 const selectedWord = ref('');
 const fontFamilyList = ref([
   { value: 'Default', label: 'Default' },
@@ -127,7 +140,10 @@ const y = ref(0);
 const showPopover = ref(false);
 const showDrawer = ref(false);
 const showSettingsDrawer = ref(false);
+/** 查询单词结果 */
 const queryWords = ref<Dict[]>([]);
+/** 阅读时间 */
+const readTime = ref(0);
 
 const handleFontSize = (size: number) => {
   styleConfig.fontSize = size + 'rem';
@@ -146,6 +162,25 @@ const handleFontFamily = (font: 'Default' | 'Helvetica' | 'Roboto') => {
   }
   if (font == 'Helvetica') {
     styleConfig.fontFamily = 'Helvetica';
+  }
+}
+
+const getContentReadTime = () => {
+  if (props.content) {
+    const num = countWord(props.content).words;
+    if (num < 150) {
+      readTime.value = 0
+    } else {
+      readTime.value = Math.round(toNumber(num / 150))
+    }
+  }
+}
+
+const formatReadTime = (readTime: number) => {
+  if (readTime == 0) {
+    return '小于 1 分钟'
+  } else {
+    return '大约 ' + readTime + ' 分钟'
   }
 }
 
@@ -204,6 +239,7 @@ const handleInput = async (word: string) => {
 watch(props, () => {
   title.value = props.title;
   toSegment(props.content);
+  getContentReadTime()
 })
 
 watch(fontSize, (value) => {
@@ -221,12 +257,15 @@ watch(font, (value) => {
   setReaderStyleConfig(styleConfig);
 })
 
+watch(showPopover, (value) => {
+  if (!value) selectedWord.value = '';
+})
+
 onMounted(() => {
   styleConfig.fontSize = getReaderStyleConfig()?.fontSize || 1;
   styleConfig.lineHeight = getReaderStyleConfig()?.lineHeight || 1;
   styleConfig.fontFamily = getReaderStyleConfig()?.fontFamily || '';
   font.value = getReaderStyleConfig()?.fontFamily || 'Default';
-  fontSize.value = getReaderStyleConfig()?.fontSize || 1;
   lineHeight.value = getReaderStyleConfig()?.lineHeight || 1;
 
   /** 选中抬起时弹出 */
@@ -298,9 +337,11 @@ onMounted(() => {
 }
 
 .reader-bottom {
-  width: 100%;
   position: fixed;
   bottom: 0;
+  width: 100%;
+  padding-left: 1rem;
+  font-size: 0.75rem;
 }
 
 .btn-group {

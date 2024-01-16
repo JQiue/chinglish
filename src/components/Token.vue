@@ -16,14 +16,14 @@ const style = reactive<CSSProperties>({
 
 /** 统计词频 */
 const wordFreq = () => {
-  const word = props.token.replace(/[,|?|!.]/, '');
+  const word = props.token.replace(/[,|?|!.|']/, '');
   // wordfreqTable.add(word);
   if (word.length == 0) return;
   addWord(word);
 }
 
-/** 标记单词 */
-const markToken = async () => {
+/** 高亮单词 */
+const highlightToken = async () => {
   const word = props.token.replace(/[,|?|!.]/, '');
   if (await unfamiliarWordsTable.has(word)) {
     style.fontWeight = 600
@@ -32,7 +32,7 @@ const markToken = async () => {
 
 onMounted(async () => {
   wordFreq();
-  markToken();
+  highlightToken();
 })
 </script>
 

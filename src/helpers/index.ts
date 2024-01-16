@@ -12,3 +12,11 @@ export const nowDatetime = (
 ): string => {
   return dayjs().format(format);
 };
+
+/**
+ * @description: 返回 number
+ * @return {string}
+ */
+export const toNumber = (value: number, accuracy = 2) => {
+  return Number(value.toFixed(accuracy));
+};
