@@ -8,9 +8,9 @@
     </n-thing>
     <n-thing>
       数据：{{ dataPath }}
-      <v-btn type="info" size="small" :loading="exportLoading" @click="handleExport">
+      <n-button type="warning" size="small" :loading="exportLoading" @click="handleExport">
         导出到桌面
-      </v-btn>
+      </n-button>
     </n-thing>
   </div>
 </template>

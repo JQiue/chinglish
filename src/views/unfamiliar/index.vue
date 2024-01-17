@@ -2,15 +2,13 @@
   <div class="container">
 
     <div class="top">
-      <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="end">
-        <v-tab :value="'list'">列表</v-tab>
-        <v-tab :value="'card'">卡片</v-tab>
-        <v-tab :value="'review'">复习</v-tab>
-      </v-tabs>
+      <n-tabs v-model:value="tab" type="line">
+        <n-tab v-for="tab in tabs" :key="tab" :name="tab"></n-tab>
+      </n-tabs>
     </div>
 
     <div class="content">
-      <template v-if="tab == 'list'">
+      <template v-if="tab == '列表'">
         <n-checkbox-group v-model:value="checkWords" @update:value="handleCheckUpdate">
           <n-list hoverable>
             <n-list-item v-for="word in words">
@@ -26,22 +24,22 @@
         </n-checkbox-group>
       </template>
 
-      <template v-if="tab == 'card'">
-        <v-window v-model="window" show-arrows>
-          <v-window-item v-for="word in words" :key="word.id">
-            <v-card height="444" class="d-flex justify-center align-center flex-column">
-              <span class="text-h2" @click="handleAudio(word.word)">{{ word.word }}</span>
-              <v-btn>Space</v-btn>
-            </v-card>
-          </v-window-item>
-        </v-window>
+      <template v-if="tab == '卡片'">
+        <n-carousel show-arrow :show-dots="false">
+          <n-card v-for="word in words" :key="word.id">
+            <n-space vertical align="center">
+              <p class="text-h2" @click="handleAudio(word.word)">{{ word.word }}</p>
+              <n-button>Space</n-button>
+            </n-space>
+          </n-card>
+        </n-carousel>
       </template>
 
-      <template v-if="tab == 'review'">
+      <template v-if="tab == '复习'">
         <n-carousel v-model:current-index="currentIndexOfCarousel" ref="review_carousel" @keyup.left="handleRemember"
-          @keyup.right="handleForget">
-          <n-card v-for="word in words" :key="word.id" content-style="text-align:center;">
-            <span class="text-h2">{{ word.word }}</span>
+          @keyup.right="handleForget" :show-dots="false">
+          <n-card v-for="word in words" :key="word.id" @click="handleAudio(word.word)" content-style="text-align:center;">
+            <p class="text-h2">{{ word.word }}</p>
           </n-card>
         </n-carousel>
         <n-space justify="center">
@@ -66,9 +64,9 @@ import { unfamiliarWordsTable } from '@/db/services.ts';
 import { CarouselInst } from 'naive-ui';
 import { audio } from '@/helpers/audio';
 
-const tab = ref('list');
+const tab = ref('列表');
+const tabs = ref(['列表', '卡片', '复习'])
 const words = ref<UnfamiliarWord[]>([]);
-const window = ref(0);
 const review_carousel = ref<CarouselInst | null>();
 const currentIndexOfCarousel = ref(0);
 const checkWords = ref([]);
@@ -87,7 +85,6 @@ const handleRemember = async () => {
   review_carousel.value?.next();
   await handleGetWords();
 }
-
 
 const handleForget = async () => {
   const id = words.value[currentIndexOfCarousel.value].id;
@@ -127,5 +124,16 @@ onMounted(async () => {
     left: 50%;
     transform: translateX(-50%);
   }
+}
+
+
+
+.text-h2 {
+  font-size: 3.75rem !important;
+  font-weight: 300;
+  line-height: 3.75rem;
+  letter-spacing: -0.0083333333em !important;
+  font-family: "Roboto", sans-serif !important;
+  text-transform: none !important;
 }
 </style>

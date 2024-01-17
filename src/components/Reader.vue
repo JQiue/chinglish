@@ -1,5 +1,5 @@
 <template>
-  <div class="reader-container" ref="reader">
+  <div class="reader-container" :style="{ backgroundColor: styleConfig.backgroundColor }" ref="reader">
     <div class="reader-top">
       <div></div>
       <div></div>
@@ -45,33 +45,44 @@
 
   <n-drawer v-model:show="showSettingsDrawer" :width="302" placement="right">
     <n-drawer-content title="设置">
-      <h3>
-        朗读选项
-      </h3>
-      <p>速度</p>
-      <n-slider disabled />
-      <p>语音</p>
-      <v-select density="compact" label="Select" :items="voiceNames" variant="outlined"></v-select>
-      <h3>
-        文本首选项
-      </h3>
-      <p>文字大小</p>
-      <n-slider v-model:value="styleConfig.fontSize" :min="1" :max="1.8" :step="0.2" :marks="{
-        1: '小',
-        1.4: '中',
-        1.8: '大',
-      }" />
-      <p>文字间距</p>
-      <n-slider v-model:value="styleConfig.lineHeight" :min="0.8" :max="1.6" :step="0.2"></n-slider>
-      <p>字体</p>
-      <n-radio-group v-model:value="styleConfig.fontFamily" name="radiogroup">
-        <n-space vertical>
-          <n-radio v-for="font in fontFamilyList" :key="font.value" :value="font.value">
-            {{ font.label }}
-          </n-radio>
+      <div>
+        <span>速度</span>
+        <n-slider disabled />
+      </div>
+      <div>
+        <span>语音</span>
+        <n-select density="compact" label="Select" :options="voiceNames" variant="outlined"></n-select>
+      </div>
+      <div>
+        <span>文字大小</span>
+        <n-slider v-model:value="styleConfig.fontSize" :min="1" :max="1.8" :step="0.2" :marks="{
+          1: '小',
+          1.4: '中',
+          1.8: '大',
+        }" />
+      </div>
+      <div>
+        <span>文字间距</span>
+        <n-slider v-model:value="styleConfig.lineHeight" :min="0.8" :max="1.6" :step="0.2"></n-slider>
+      </div>
+      <div>
+        <span>字体</span>
+        <n-radio-group v-model:value="styleConfig.fontFamily" name="radiogroup">
+          <n-space>
+            <n-radio v-for="font in fontFamilyList" :key="font.value" :value="font.value">
+              {{ font.label }}
+            </n-radio>
+          </n-space>
+        </n-radio-group>
+      </div>
+      <div>
+        <p>背景</p>
+        <n-space>
+          <n-button v-for="color in backgroundColorList" :key="color.value" @click="handleChangeBgColor(color.value)"
+            ghost>{{ color.label
+            }}</n-button>
         </n-space>
-      </n-radio-group>
-      <p>背景</p>
+      </div>
     </n-drawer-content>
   </n-drawer>
 
@@ -79,7 +90,7 @@
     <n-drawer-content title="查询">
       <n-input @input="handleInput"></n-input>
       <n-list hoverable>
-        <n-list-item v-for="    word     in     queryWords    ">
+        <n-list-item v-for="word in queryWords">
           <n-thing>
             <div style="font-weight: 600;">{{ word.word }}</div>
             <div>音标：{{ word.phonetic }}</div>
@@ -120,7 +131,8 @@ const voices = ref<Record<string, any>>([]);
 const styleConfig = reactive({
   fontSize: 1,
   lineHeight: 1,
-  fontFamily: ''
+  fontFamily: '',
+  backgroundColor: ''
 });
 /** 可用的 font-family */
 const font = ref<'' | 'Helvetica' | 'Roboto'>('');
@@ -128,6 +140,13 @@ const fontFamilyList = ref([
   { value: '', label: 'Default' },
   { value: 'Helvetica', label: 'Helvetica' },
   { value: 'Roboto', label: 'Roboto' },
+]);
+const backgroundColorList = ref([
+  { value: '#ffffff', label: '白雪' },
+  { value: '#ffffed', label: '明黄' },
+  { value: '#fcefff', label: '红粉' },
+  { value: '#c0d3d7', label: '仿墨水屏' },
+  { value: '#f5f5dc', label: '米黄' },
 ]);
 /** 选中的单词 */
 const selectedWord = ref('');
@@ -145,9 +164,14 @@ const getStyleConfig = () => {
   const style = {
     fontSize: styleConfig.fontSize + 'rem',
     lineHeight: styleConfig.lineHeight,
-    fontFamily: styleConfig.fontFamily
+    fontFamily: styleConfig.fontFamily,
+    backgroundColor: styleConfig.backgroundColor
   }
   return style;
+}
+
+const handleChangeBgColor = (color: string) => {
+  styleConfig.backgroundColor = color;
 }
 
 const getContentReadTime = () => {
@@ -240,6 +264,7 @@ onMounted(() => {
   styleConfig.fontSize = getReaderStyleConfig()?.fontSize || 1;
   styleConfig.lineHeight = getReaderStyleConfig()?.lineHeight || 1;
   styleConfig.fontFamily = getReaderStyleConfig()?.fontFamily || '';
+  styleConfig.backgroundColor = getReaderStyleConfig()?.backgroundColor || '';
   font.value = getReaderStyleConfig()?.fontFamily || 'Default';
 
   /** 选中抬起时弹出 */
@@ -320,5 +345,12 @@ onMounted(() => {
 
 .btn-group {
   display: flex;
+}
+
+.setting-title {
+  display: inline-block;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
 }
 </style>
