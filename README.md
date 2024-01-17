@@ -13,14 +13,14 @@ An English Learning Tool
 
 + Read
 + Vocabulary
++ Word frequency statistics
 + More..
 
 ## Technology
 
 + Rust
-+ Tauri
-+ SQLite
 + TypeScript
++ Tauri
 + Vue3 + VueRouter + Vite
-+ Vuetify
 + Naive
++ SQLite
