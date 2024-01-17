@@ -46,7 +46,6 @@ onMounted(async () => {
   version.value = await app.getVersion();
   dataPath.value = await path.appDataDir()
 })
-
 </script>
 
 <style scoped>

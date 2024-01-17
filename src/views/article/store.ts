@@ -17,6 +17,7 @@ export const state = reactive<State>({
     content: "",
     source: "",
     collection: "",
+    volume: "",
     read_count: 0,
     created_at: "",
   },
