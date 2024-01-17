@@ -18,8 +18,7 @@
 <script setup lang="ts">
 import { dump } from '@/db';
 import { app, path } from '@tauri-apps/api';
-import { onMounted } from 'vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
 
 const version = ref('0.0.0');

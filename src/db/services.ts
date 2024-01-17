@@ -78,7 +78,7 @@ class ArticlesTable {
     volume,
   }: Article) {
     return await execute(
-      `UPDATE articles SET title=?,author=?,content=?,collection=?,source=?,volume where id=?`,
+      `UPDATE articles SET title=?,author=?,content=?,collection=?,source=?,volume=? where id=?`,
       [title, author, content, collection, source, volume, id]
     );
   }

@@ -8,7 +8,7 @@ import Statistics from "../views/statistics/index.vue";
 
 export default [
   { path: "/", redirect: "/read" },
-  { name: "read", path: "/read/:id?", component: Read },
+  { name: "read", path: "/read", component: Read },
   { path: "/unfamiliar_word", component: UnfamiliarWord },
   { path: "/article", component: Article },
   { path: "/about", component: About },

@@ -312,10 +312,10 @@ onMounted(() => {
 
 .reader-content-container {
   max-width: 45rem;
-  padding-top: 1.973rem !important;
-  padding-left: 2.444rem;
-  padding-right: 2.444rem;
-  padding-bottom: 2.444rem;
+  padding-top: 1.173rem !important;
+  padding-left: 2.222rem;
+  padding-right: 2.222rem;
+  padding-bottom: 2.222rem;
   margin-left: auto;
   margin-right: auto;
 }
@@ -344,6 +344,8 @@ onMounted(() => {
 }
 
 .btn-group {
+  position: fixed;
+  right: 0;
   display: flex;
 }
 

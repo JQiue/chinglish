@@ -43,6 +43,7 @@ import { articlesTable } from '@/db/services';
 import { useRouter } from 'vue-router';
 import Editor from './editor.vue';
 import { state } from './store';
+import { saveLastArticleId } from '@/helpers/storage';
 
 const router = useRouter();
 
@@ -65,7 +66,8 @@ const handleEdit = async (id: number) => {
 }
 
 const handleRead = async (id: number) => {
-  router.push({ name: 'reader', params: { id } });
+  saveLastArticleId(id.toString());
+  router.push({ name: 'read' });
 }
 
 onMounted(async () => {

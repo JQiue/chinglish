@@ -7,16 +7,15 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
 import { articlesTable } from '@/db/services';
 import { getLastArticleId, saveLastArticleId } from '@/helpers/storage';
-import { onMounted, ref } from 'vue';
 import Reader from '@/components/Reader.vue';
 import { pushWord } from '../../store/wordFreq';
 
 const read = ref<HTMLDivElement>();
 const articles = ref<Article[]>();
 const currentArticle = ref<Article>();
-
 
 /** 获取文章列表 */
 const getArticles = async () => {
@@ -42,7 +41,7 @@ const getCurrentArticleIndex = () => {
 const handlePreviousArticle = async () => {
   if (articles.value) {
     const index = getCurrentArticleIndex();
-    const prevIndex = (index + 1 + articles.value.length) % articles.value.length;
+    const prevIndex = (index - 1 + articles.value.length) % articles.value.length;
     updateCurrentArticle(prevIndex);
     if (currentArticle.value) {
       saveLastArticleId(currentArticle.value.id.toString())
