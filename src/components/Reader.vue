@@ -23,7 +23,7 @@
           <h1 class="title">{{ title }}</h1>
         </div>
       </div>
-      <div class="reader-content-body" :style="styleConfig" ref="segment">
+      <div class="reader-content-body" :style="getStyleConfig()" ref="segment">
         <n-popover :show="showPopover" :x="x" :y="y" trigger="manual">
           <n-button quaternary size="small" @click="() => unfamiliarWordsTable.add(selectedWord)">
             添加到生词本
@@ -56,15 +56,15 @@
         文本首选项
       </h3>
       <p>文字大小</p>
-      <n-slider v-model:value="fontSize" :min="1" :max="1.8" :step="0.2" :marks="{
+      <n-slider v-model:value="styleConfig.fontSize" :min="1" :max="1.8" :step="0.2" :marks="{
         1: '小',
         1.4: '中',
         1.8: '大',
       }" />
       <p>文字间距</p>
-      <n-slider v-model:value="lineHeight" :min="0.8" :max="1.6" :step="0.2"></n-slider>
+      <n-slider v-model:value="styleConfig.lineHeight" :min="0.8" :max="1.6" :step="0.2"></n-slider>
       <p>字体</p>
-      <n-radio-group v-model:value="font" name="radiogroup">
+      <n-radio-group v-model:value="styleConfig.fontFamily" name="radiogroup">
         <n-space vertical>
           <n-radio v-for="font in fontFamilyList" :key="font.value" :value="font.value">
             {{ font.label }}
@@ -93,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, CSSProperties, onMounted, reactive } from 'vue';
+import { ref, computed, watch, onMounted, reactive } from 'vue';
 import { getReaderStyleConfig, setReaderStyleConfig } from '../localdata/index';
 import { unfamiliarWordsTable } from '../db/services';
 import { audio } from '@/helpers/audio';
@@ -117,24 +117,20 @@ const contentSegment = ref<string[]>([]);
 /** 语音列表 */
 const voices = ref<Record<string, any>>([]);
 /** 阅读器样式 */
-const styleConfig = reactive<CSSProperties>({
-  fontSize: '1rem',
+const styleConfig = reactive({
+  fontSize: 1,
   lineHeight: 1,
   fontFamily: ''
 });
 /** 可用的 font-family */
-const font = ref<'Default' | 'Helvetica' | 'Roboto'>('Default');
-/** 字体大小 */
-const fontSize = ref();
-/** 行间距 */
-const lineHeight = ref();
-/** 选中的单词 */
-const selectedWord = ref('');
+const font = ref<'' | 'Helvetica' | 'Roboto'>('');
 const fontFamilyList = ref([
-  { value: 'Default', label: 'Default' },
+  { value: '', label: 'Default' },
   { value: 'Helvetica', label: 'Helvetica' },
   { value: 'Roboto', label: 'Roboto' },
 ]);
+/** 选中的单词 */
+const selectedWord = ref('');
 const x = ref(0);
 const y = ref(0);
 const showPopover = ref(false);
@@ -145,24 +141,13 @@ const queryWords = ref<Dict[]>([]);
 /** 阅读时间 */
 const readTime = ref(0);
 
-const handleFontSize = (size: number) => {
-  styleConfig.fontSize = size + 'rem';
-}
-
-const handleLineHeight = (size: number) => {
-  styleConfig.lineHeight = size;
-}
-
-const handleFontFamily = (font: 'Default' | 'Helvetica' | 'Roboto') => {
-  if (font == 'Default') {
-    styleConfig.fontFamily = '';
+const getStyleConfig = () => {
+  const style = {
+    fontSize: styleConfig.fontSize + 'rem',
+    lineHeight: styleConfig.lineHeight,
+    fontFamily: styleConfig.fontFamily
   }
-  if (font == 'Roboto') {
-    styleConfig.fontFamily = 'Roboto';
-  }
-  if (font == 'Helvetica') {
-    styleConfig.fontFamily = 'Helvetica';
-  }
+  return style;
 }
 
 const getContentReadTime = () => {
@@ -239,21 +224,11 @@ const handleInput = async (word: string) => {
 watch(props, () => {
   title.value = props.title;
   toSegment(props.content);
-  getContentReadTime()
+  getContentReadTime();
 })
 
-watch(fontSize, (value) => {
-  handleFontSize(value);
-  setReaderStyleConfig(styleConfig);
-})
-
-watch(lineHeight, (value) => {
-  handleLineHeight(value)
-  setReaderStyleConfig(styleConfig);
-})
-
-watch(font, (value) => {
-  handleFontFamily(value);
+watch(styleConfig, ({ fontFamily }) => {
+  styleConfig.fontFamily = fontFamily;
   setReaderStyleConfig(styleConfig);
 })
 
@@ -266,7 +241,6 @@ onMounted(() => {
   styleConfig.lineHeight = getReaderStyleConfig()?.lineHeight || 1;
   styleConfig.fontFamily = getReaderStyleConfig()?.fontFamily || '';
   font.value = getReaderStyleConfig()?.fontFamily || 'Default';
-  lineHeight.value = getReaderStyleConfig()?.lineHeight || 1;
 
   /** 选中抬起时弹出 */
   segment.value?.addEventListener('mouseup', (e) => {
