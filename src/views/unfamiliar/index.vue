@@ -7,46 +7,55 @@
       </n-tabs>
     </div>
 
+
     <div class="content">
-      <template v-if="tab == '列表'">
-        <n-checkbox-group v-model:value="checkWords" @update:value="handleCheckUpdate">
-          <n-list hoverable>
-            <n-list-item v-for="word in words">
-              <template #prefix>
-                <n-checkbox size="small" :value="word.id" />
-              </template>
-              <n-thing content-style="font-weight: 600">
-                {{ word.word }}
-                <n-progress type="line" :percentage="getProgress(word.proficiency)" />
-              </n-thing>
-            </n-list-item>
-          </n-list>
-        </n-checkbox-group>
+      <div style="height: 100%; display: flex; justify-content: center; align-items: center;" v-if="words.length == 0">
+        <n-empty description="空空如也">
+        </n-empty>
+      </div>
+      <template v-else>
+        <template v-if="tab == '列表'">
+          <n-checkbox-group v-model:value="checkWords" @update:value="handleCheckUpdate">
+            <n-list hoverable>
+              <n-list-item v-for="word in words">
+                <template #prefix>
+                  <n-checkbox size="small" :value="word.id" />
+                </template>
+                <n-thing content-style="font-weight: 600">
+                  {{ word.word }}
+                  <n-progress type="line" :percentage="getProgress(word.proficiency)" />
+                </n-thing>
+              </n-list-item>
+            </n-list>
+          </n-checkbox-group>
+        </template>
+
+        <template v-if="tab == '卡片'">
+          <n-carousel show-arrow :show-dots="false">
+            <n-card v-for="word in words" :key="word.id">
+              <n-space vertical align="center">
+                <p class="text-h2" @click="handleAudio(word.word)">{{ word.word }}</p>
+                <n-button>Space</n-button>
+              </n-space>
+            </n-card>
+          </n-carousel>
+        </template>
+
+        <template v-if="tab == '复习'">
+          <n-carousel v-model:current-index="currentIndexOfCarousel" ref="review_carousel" @keyup.left="handleRemember"
+            @keyup.right="handleForget" :show-dots="false">
+            <n-card v-for="word in words" :key="word.id" @click="handleAudio(word.word)"
+              content-style="text-align:center;">
+              <p class="text-h2">{{ word.word }}</p>
+            </n-card>
+          </n-carousel>
+          <n-space justify="center">
+            <n-button @click="handleRemember">记得</n-button>
+            <n-button @click="handleForget">不记得</n-button>
+          </n-space>
+        </template>
       </template>
 
-      <template v-if="tab == '卡片'">
-        <n-carousel show-arrow :show-dots="false">
-          <n-card v-for="word in words" :key="word.id">
-            <n-space vertical align="center">
-              <p class="text-h2" @click="handleAudio(word.word)">{{ word.word }}</p>
-              <n-button>Space</n-button>
-            </n-space>
-          </n-card>
-        </n-carousel>
-      </template>
-
-      <template v-if="tab == '复习'">
-        <n-carousel v-model:current-index="currentIndexOfCarousel" ref="review_carousel" @keyup.left="handleRemember"
-          @keyup.right="handleForget" :show-dots="false">
-          <n-card v-for="word in words" :key="word.id" @click="handleAudio(word.word)" content-style="text-align:center;">
-            <p class="text-h2">{{ word.word }}</p>
-          </n-card>
-        </n-carousel>
-        <n-space justify="center">
-          <n-button @click="handleRemember">记得</n-button>
-          <n-button @click="handleForget">不记得</n-button>
-        </n-space>
-      </template>
 
     </div>
 
@@ -117,6 +126,13 @@ onMounted(async () => {
 <style scoped>
 .container {
   position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  .content {
+    flex: 1;
+  }
 
   .fixed {
     position: fixed;
@@ -124,9 +140,8 @@ onMounted(async () => {
     left: 50%;
     transform: translateX(-50%);
   }
+
 }
-
-
 
 .text-h2 {
   font-size: 3.75rem !important;

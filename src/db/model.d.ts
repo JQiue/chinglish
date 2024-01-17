@@ -41,6 +41,8 @@ interface Article {
   content: string;
   /** 来源 */
   source: string;
+  /** 册 */
+  volume: string;
   /** 合集 */
   collection: string;
   /** 阅读次数 */

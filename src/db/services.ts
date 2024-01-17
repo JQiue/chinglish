@@ -55,11 +55,12 @@ class ArticlesTable {
     author: string,
     content: string,
     collection: string,
+    volume: string,
     source: string
   ) {
     return await execute(
-      `INSERT INTO articles(title, author, content, collection, source, read_count, created_at) VALUES(?,?,?,?,?,?,?)`,
-      [title, author, content, collection, source, 0, nowDatetime()]
+      `INSERT INTO articles(title, author, content, collection, source, volume, read_count, created_at) VALUES(?,?,?,?,?,?,?,?)`,
+      [title, author, content, collection, source, volume, 0, nowDatetime()]
     );
   }
   /** 删除 */
@@ -67,10 +68,18 @@ class ArticlesTable {
     return await execute(`DELETE FROM articles where id=?`, [id]);
   }
   /** 更新 */
-  async update({ id, title, author, content, collection, source }: Article) {
+  async update({
+    id,
+    title,
+    author,
+    content,
+    collection,
+    source,
+    volume,
+  }: Article) {
     return await execute(
-      `UPDATE articles SET title=?,author=?,content=?,collection=?,source=? where id=?`,
-      [title, author, content, collection, source, id]
+      `UPDATE articles SET title=?,author=?,content=?,collection=?,source=?,volume where id=?`,
+      [title, author, content, collection, source, volume, id]
     );
   }
   /** 获取文章 */
@@ -93,6 +102,23 @@ class ArticlesTable {
     );
     if (results.length > 0) return results[0];
     return null;
+  }
+  /** 获取卷 */
+  async getVolume() {
+    const results = await select<Article[]>(
+      `SELECT DISTINCT volume FROM articles`
+    );
+
+    if (results.length == 0) return [];
+    return results.map((value) => value.volume);
+  }
+  /** 获取作者 */
+  async getAuthor() {
+    const results = await select<Article[]>(
+      `SELECT DISTINCT author FROM articles`
+    );
+    if (results.length == 0) return [];
+    return results.map((value) => value.author);
   }
 }
 

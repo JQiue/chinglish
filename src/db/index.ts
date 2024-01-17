@@ -145,6 +145,7 @@ export function initTable() {
     content TEXT,
     source TEXT,
     collection TEXT,
+    volume TEXT,
     read_count INTEGER DEFAULT 0,
     created_at DATETIME
   );

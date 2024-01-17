@@ -5,7 +5,13 @@
       <n-button @click="() => { state.showEditor = true, state.editorMode = 'add' }">添加文章</n-button>
     </div>
     <div class="content">
-      <n-list hoverable>
+      <div style="height: 100%; display: flex; justify-content: center; align-items: center;"
+        v-if="state.articles.length == 0">
+        <n-empty description="空空如也">
+        </n-empty>
+      </div>
+
+      <n-list hoverable v-else>
         <n-list-item v-for="article in state.articles">
           <template #prefix>
             <n-checkbox size="small" />
@@ -68,6 +74,16 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+}
+
 .group-btn {
   display: flex;
 }
