@@ -84,7 +84,8 @@ class ArticlesTable {
   }
   /** 获取文章 */
   async get() {
-    return await select<Article[]>(`SELECT * FROM articles`);
+    const result = await select<Article[]>(`SELECT * FROM articles`);
+    return result;
   }
   /** 更新阅读次数 */
   async updateReadCount(id: number, opreator: "+" | "-") {

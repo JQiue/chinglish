@@ -1,15 +1,22 @@
 <template>
-  <n-select v-model:value="limit" :options="options" @update:value="handleChange" />
-  <n-button @click="handleClear">清除所有统计数据</n-button>
+  <n-space>
+    <n-popconfirm positiveText="确定" negative-text="取消" @positive-click="handleClear">
+      确定删除？
+      <template #trigger>
+        <n-button>清除所有统计数据</n-button>
+      </template>
+    </n-popconfirm>
+    <n-select v-model:value="limit" :options="options" @update:value="handleChange" />
+  </n-space>
   <div class="statistics" id="statistics"> </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import * as echarts from 'echarts';
 import { wordfreqTable } from '@/db/services';
 import wonderland from '../../assets/wonderland.project.json';
 import { SelectBaseOption } from 'naive-ui/es/select/src/interface';
+import * as echarts from 'echarts';
 
 echarts.registerTheme("wonderland", wonderland);
 let myChart: echarts.ECharts;
@@ -30,10 +37,12 @@ const options = ref<SelectBaseOption[]>([
   }
 ]);
 
+/** 更改时绘制 */
 const handleChange = () => {
   draw();
 }
 
+/** 清除数据 */
 const handleClear = () => {
   wordfreqTable.clear();
   draw()

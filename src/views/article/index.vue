@@ -7,26 +7,36 @@
     <div class="content">
       <div style="height: 100%; display: flex; justify-content: center; align-items: center;"
         v-if="state.articles.length == 0">
-        <n-empty description="空空如也">
-        </n-empty>
+        <n-empty description="空空如也"></n-empty>
       </div>
 
       <n-list hoverable v-else>
-        <n-list-item v-for="article in state.articles">
+        <n-list-item v-for="article in state.articles" :key="article.id">
           <template #prefix>
             <n-checkbox size="small" />
           </template>
-          <n-thing content-style="font-weight: 600">
-            {{ article.title }}
+          <n-thing>
+            <template #header>
+              <span style="font-weight: 600;">
+                {{ article.title }}
+              </span>
+            </template>
+            <template #description>
+              <n-space>
+                <span>作者：{{ article.author }}</span>
+                <span>册：{{ article.volume }}</span>
+                <span>阅读：{{ article.read_count }}</span>
+              </n-space>
+            </template>
           </n-thing>
           <template #suffix>
             <div class="group-btn">
-              <n-button size="small" @click="handleRead(article.id)">阅读</n-button>
-              <n-button size="small" @click="handleEdit(article.id)">编辑</n-button>
+              <n-button size="small" type="primary" @click="handleRead(article.id)">阅读</n-button>
+              <n-button size="small" type="info" @click="handleEdit(article.id)">编辑</n-button>
               <n-popconfirm positiveText="确定" negative-text="取消" @positive-click="handleDelete(article.id)">
                 确定删除？
                 <template #trigger>
-                  <n-button size="small">删除</n-button>
+                  <n-button size="small" type="warning">删除</n-button>
                 </template>
               </n-popconfirm>
             </div>
