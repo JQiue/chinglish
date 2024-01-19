@@ -2,7 +2,7 @@
   <div class="read" ref="read">
     <div class="prev" @click="handlePreviousArticle" ref="prev">上</div>
     <div class="next" @click="handleNextArticle" ref="next">下</div>
-    <Reader :title="currentArticle?.title" :content="currentArticle?.content"></Reader>
+    <Reader :id="currentArticle?.id" :title="currentArticle?.title" :content="currentArticle?.content"></Reader>
   </div>
 </template>
 
@@ -38,6 +38,7 @@ const getCurrentArticleIndex = () => {
   }
 }
 
+/** 上一篇文章 */
 const handlePreviousArticle = async () => {
   if (articles.value) {
     const index = getCurrentArticleIndex();
@@ -49,6 +50,7 @@ const handlePreviousArticle = async () => {
   }
 }
 
+/** 下一篇文章 */
 const handleNextArticle = async () => {
   if (articles.value) {
     const index = getCurrentArticleIndex();

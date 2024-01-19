@@ -1,15 +1,25 @@
 <template>
-  <span :style="style"> {{ props.token }}&nbsp;</span>
+  <n-tooltip trigger="hover">
+    <template #trigger>
+      <span :style="style"> {{ props.token }}</span>
+    </template>
+    <span v-for="(tag, index) in tags" :key="tag">
+      {{ fotmatTag(tag) }}
+      <span v-if="tags.length - 1 != index">&nbsp;</span></span>
+  </n-tooltip>
 </template>
 
 <script setup lang="ts">
 import { unfamiliarWordsTable } from '@/db/services';
+import { mapping } from '@/helpers/posTagging';
 import { addWord } from '@/store/wordFreq';
-import { CSSProperties, reactive } from 'vue';
+import { Term } from 'node_modules/compromise/types/misc';
+import { CSSProperties, reactive, ref } from 'vue';
 import { onMounted } from 'vue';
 
-const props = defineProps<{ token: string }>();
+const props = defineProps<{ term: Term, token: string }>();
 
+const tags = ref<string[]>([]);
 const style = reactive<CSSProperties>({
   fontWeight: ''
 });
@@ -30,9 +40,24 @@ const highlightToken = async () => {
   }
 }
 
+const resolve = () => {
+  if (props.term.tags && props.term.tags.size != 0) {
+    tags.value = Array.from(props.term.tags);
+  }
+}
+
+const fotmatTag = (tag: string) => {
+  const mapTag = mapping(tag);
+  if (mapTag) return mapTag;
+  else {
+    return tag;
+  }
+}
+
 onMounted(async () => {
   wordFreq();
   highlightToken();
+  resolve();
 })
 </script>
 

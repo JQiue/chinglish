@@ -1,8 +1,7 @@
 <template>
   <div class="reader-container" :style="{ backgroundColor: styleConfig.backgroundColor }" ref="reader">
+
     <div class="reader-top">
-      <div></div>
-      <div></div>
       <div class="btn-group">
         <n-button quaternary circle @click="handleRead(props.content ?? '')">
           <template #icon>
@@ -106,7 +105,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, reactive } from 'vue';
 import { getReaderStyleConfig, setReaderStyleConfig } from '../localdata/index';
-import { unfamiliarWordsTable } from '../db/services';
+import { articlesTable, unfamiliarWordsTable } from '../db/services';
 import { audio } from '@/helpers/audio';
 import { toNumber } from '@/helpers';
 import { dictTable } from '@/db/dict';
@@ -114,8 +113,9 @@ import Segment from '../components/Segment.vue';
 import SettingsIcon from '../components/icons/SettingsIcon.vue';
 import VoiceIcon from '../components/icons/VoiceIcon.vue';
 import { count as countWord } from 'letter-count';
+import { onUnmounted } from 'vue';
 
-const props = defineProps<{ title?: string, content?: string }>();
+const props = defineProps<{ id?: number, title?: string, content?: string }>();
 
 /** 阅读器元素引用  */
 const reader = ref<HTMLDivElement>();
@@ -157,8 +157,9 @@ const showDrawer = ref(false);
 const showSettingsDrawer = ref(false);
 /** 查询单词结果 */
 const queryWords = ref<Dict[]>([]);
-/** 阅读时间 */
+/** 阅读时间，分钟 */
 const readTime = ref(0);
+const timeId = ref();
 
 const getStyleConfig = () => {
   const style = {
@@ -177,10 +178,11 @@ const handleChangeBgColor = (color: string) => {
 const getContentReadTime = () => {
   if (props.content) {
     const num = countWord(props.content).words;
-    if (num < 150) {
-      readTime.value = 0
+    const threshold = 150;
+    if (num < threshold) {
+      readTime.value = toNumber(num / threshold);
     } else {
-      readTime.value = Math.round(toNumber(num / 150))
+      readTime.value = Math.round(toNumber(num / threshold))
     }
   }
 }
@@ -245,10 +247,19 @@ const handleInput = async (word: string) => {
   }
 }
 
+const articleReadCount = () => {
+  const ms = toNumber(readTime.value * 60 * 1000);
+  timeId.value = setTimeout(() => {
+    console.log("阅读完成");
+    if (props.id) articlesTable.updateReadCount(props.id, "+");
+  }, ms);
+}
+
 watch(props, () => {
   title.value = props.title;
   toSegment(props.content);
   getContentReadTime();
+  articleReadCount();
 })
 
 watch(styleConfig, ({ fontFamily }) => {
@@ -300,6 +311,12 @@ onMounted(() => {
     range.setEnd(range.endContainer, range.endOffset - spaceCount);
     selection.addRange(range);
   }, false)
+})
+
+onUnmounted(() => {
+  if (timeId.value) {
+    clearTimeout(timeId.value);
+  }
 })
 </script>
 
