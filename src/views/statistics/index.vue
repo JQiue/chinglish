@@ -1,4 +1,5 @@
 <template>
+  <n-statistic label="个人词汇量" :value="vocabularySize"> </n-statistic>
   <n-space>
     <n-popconfirm positiveText="确定" negative-text="取消" @positive-click="handleClear">
       确定删除？
@@ -21,6 +22,7 @@ import * as echarts from 'echarts';
 echarts.registerTheme("wonderland", wonderland);
 let myChart: echarts.ECharts;
 
+const vocabularySize = ref(0);
 const limit = ref(10);
 const options = ref<SelectBaseOption[]>([
   {
@@ -40,6 +42,11 @@ const options = ref<SelectBaseOption[]>([
 /** 更改时绘制 */
 const handleChange = () => {
   draw();
+}
+
+const getVocabularySize = async () => {
+  const count = await wordfreqTable.getVocabularySizeStat();
+  vocabularySize.value = count;
 }
 
 /** 清除数据 */
@@ -73,16 +80,17 @@ const draw = async () => {
 }
 
 onMounted(async () => {
+  getVocabularySize();
   myChart = echarts.init(document.getElementById('statistics'), 'wonderland');
   window.addEventListener('resize', function () {
     myChart.resize();
   });
-  draw()
+  draw();
 })
 </script>
 
 <style scoped>
 .statistics {
-  height: 89vh;
+  height: 83vh;
 }
 </style>

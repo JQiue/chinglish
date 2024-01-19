@@ -155,6 +155,13 @@ class WordFreqTable {
   async clear() {
     return await execute(`DELETE FROM word_freq`);
   }
+  /** 词汇量统计 */
+  async getVocabularySizeStat() {
+    const result = await select<any[]>(
+      `SELECT DISTINCT count(word) as count FROM word_freq`
+    );
+    return result[0].count;
+  }
 }
 
 export const unfamiliarWordsTable = new UnfamiliarWordsTable();

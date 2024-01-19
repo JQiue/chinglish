@@ -188,7 +188,7 @@ const getContentReadTime = () => {
 }
 
 const formatReadTime = (readTime: number) => {
-  if (readTime == 0) {
+  if (readTime < 1) {
     return '小于 1 分钟'
   } else {
     return '大约 ' + readTime + ' 分钟'
@@ -250,7 +250,6 @@ const handleInput = async (word: string) => {
 const articleReadCount = () => {
   const ms = toNumber(readTime.value * 60 * 1000);
   timeId.value = setTimeout(() => {
-    console.log("阅读完成");
     if (props.id) articlesTable.updateReadCount(props.id, "+");
   }, ms);
 }
