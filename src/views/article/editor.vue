@@ -16,9 +16,11 @@
 </template>
 
 <script setup lang="ts">
-import { articlesTable } from '@/db/services';
-import { state } from './store';
 import { ref } from 'vue';
+import { useArticlesTable } from '@/db';
+import { state } from './store';
+
+const articlesTable = useArticlesTable();
 
 const props = defineProps<{ show: boolean }>();
 

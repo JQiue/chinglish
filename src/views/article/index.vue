@@ -49,11 +49,14 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { articlesTable } from '@/db/services';
 import { useRouter } from 'vue-router';
-import Editor from './editor.vue';
+import { useArticlesTable } from '@/db';
 import { state } from './store';
-import { saveLastArticleId } from '@/helpers/storage';
+import { saveLastArticleId } from '@/helpers';
+import Editor from './editor.vue';
+
+const articlesTable = useArticlesTable();
+
 
 const router = useRouter();
 

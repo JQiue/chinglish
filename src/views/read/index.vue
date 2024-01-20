@@ -8,10 +8,12 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { articlesTable } from '@/db/services';
-import { getLastArticleId, saveLastArticleId } from '@/helpers/storage';
+import { useArticlesTable } from '@/db';
+import { getLastArticleId, saveLastArticleId } from '@/helpers';
 import Reader from '@/components/Reader.vue';
 import { pushWord } from '../../store/wordFreq';
+
+const articlesTable = useArticlesTable();
 
 const read = ref<HTMLDivElement>();
 const articles = ref<Article[]>();

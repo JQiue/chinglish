@@ -10,12 +10,14 @@
 </template>
 
 <script setup lang="ts">
-import { unfamiliarWordsTable } from '@/db/services';
-import { mapping } from '@/helpers/posTagging';
+import { useUnfamiliarWordsTable } from '@/db';
+import { mapping } from '@/helpers';
 import { addWord } from '@/store/wordFreq';
 import { Term } from 'node_modules/compromise/types/misc';
 import { CSSProperties, reactive, ref } from 'vue';
 import { onMounted } from 'vue';
+
+const unfamiliarWordsTable = useUnfamiliarWordsTable();
 
 const props = defineProps<{ term: Term, token: string }>();
 
@@ -27,7 +29,6 @@ const style = reactive<CSSProperties>({
 /** 统计词频 */
 const wordFreq = () => {
   const word = props.token.replace(/[,|?|!.|']/, '');
-  // wordfreqTable.add(word);
   if (word.length == 0) return;
   addWord(word);
 }
@@ -48,8 +49,10 @@ const resolve = () => {
 
 const fotmatTag = (tag: string) => {
   const mapTag = mapping(tag);
-  if (mapTag) return mapTag;
-  else {
+  if (mapTag) {
+    return mapTag
+  } else {
+    console.log(tag);
     return tag;
   }
 }

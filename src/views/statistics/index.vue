@@ -14,10 +14,12 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { wordfreqTable } from '@/db/services';
+import { useWordFreqTable } from '@/db';
+import * as echarts from 'echarts';
 import wonderland from '../../assets/wonderland.project.json';
 import { SelectBaseOption } from 'naive-ui/es/select/src/interface';
-import * as echarts from 'echarts';
+
+const wordfreqTable = useWordFreqTable();
 
 echarts.registerTheme("wonderland", wonderland);
 let myChart: echarts.ECharts;

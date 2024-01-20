@@ -4,8 +4,8 @@ import { router } from "./router/index";
 import App from "./App.vue";
 import "./styles.css";
 
-import { initTable } from "./db";
+import { useCreateTable } from "./db";
 
-initTable();
+useCreateTable()();
 
 createApp(App).use(router).use(naive).mount("#app");

@@ -103,17 +103,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, reactive } from 'vue';
+import { ref, computed, watch, onMounted, reactive, onUnmounted } from 'vue';
+import { useArticlesTable, useDictTable, useUnfamiliarWordsTable } from '@/db';
 import { getReaderStyleConfig, setReaderStyleConfig } from '../localdata/index';
-import { articlesTable, unfamiliarWordsTable } from '../db/services';
-import { audio } from '@/helpers/audio';
-import { toNumber } from '@/helpers';
-import { dictTable } from '@/db/dict';
+import { toNumber, audio } from '@/helpers';
 import Segment from '../components/Segment.vue';
 import SettingsIcon from '../components/icons/SettingsIcon.vue';
 import VoiceIcon from '../components/icons/VoiceIcon.vue';
 import { count as countWord } from 'letter-count';
-import { onUnmounted } from 'vue';
+import nlp from 'compromise';
+
+const articlesTable = useArticlesTable();
+const unfamiliarWordsTable = useUnfamiliarWordsTable();
+const dictTable = useDictTable();
 
 const props = defineProps<{ id?: number, title?: string, content?: string }>();
 
@@ -161,6 +163,12 @@ const queryWords = ref<Dict[]>([]);
 const readTime = ref(0);
 const timeId = ref();
 
+const nlpProcessing = async () => {
+  if (props.content) {
+    console.log(nlp(props.content).json());
+  }
+}
+
 const getStyleConfig = () => {
   const style = {
     fontSize: styleConfig.fontSize + 'rem',
@@ -196,7 +204,7 @@ const formatReadTime = (readTime: number) => {
 }
 
 /** 将内容处理成段 */
-function toSegment(content: string | undefined) {
+const toSegment = (content: string | undefined) => {
   contentSegment.value = [];
   if (content) {
     contentSegment.value = contentSegment.value.concat(content.split('\n'));
@@ -259,6 +267,7 @@ watch(props, () => {
   toSegment(props.content);
   getContentReadTime();
   articleReadCount();
+  nlpProcessing();
 })
 
 watch(styleConfig, ({ fontFamily }) => {
@@ -271,6 +280,7 @@ watch(showPopover, (value) => {
 })
 
 onMounted(() => {
+
   styleConfig.fontSize = getReaderStyleConfig()?.fontSize || 1;
   styleConfig.lineHeight = getReaderStyleConfig()?.lineHeight || 1;
   styleConfig.fontFamily = getReaderStyleConfig()?.fontFamily || '';

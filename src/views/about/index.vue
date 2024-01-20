@@ -16,10 +16,12 @@
 </template>
 
 <script setup lang="ts">
-import { dump } from '@/db';
+import { useDump } from '@/db';
 import { app, path } from '@tauri-apps/api';
 import { ref, onMounted } from 'vue';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
+
+const dump = useDump()
 
 const version = ref('0.0.0');
 const author = ref('Ush2a');

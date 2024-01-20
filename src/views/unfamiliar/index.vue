@@ -56,7 +56,6 @@
         </template>
       </template>
 
-
     </div>
 
     <div class="fixed" v-show="checkWords.length != 0">
@@ -69,9 +68,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { unfamiliarWordsTable } from '@/db/services.ts';
 import { CarouselInst } from 'naive-ui';
-import { audio } from '@/helpers/audio';
+import { useUnfamiliarWordsTable } from '@/db';
+import { audio } from '@/helpers';
+
+const unfamiliarWordsTable = useUnfamiliarWordsTable();
 
 const tab = ref('列表');
 const tabs = ref(['列表', '卡片', '复习'])

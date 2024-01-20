@@ -1,11 +1,5 @@
-import { execute, select } from ".";
 import { nowDatetime } from "@/helpers";
-
-/** 更新熟练度 */
-export const updateProficiency = async (id: number, opreator: "+" | "-") => {
-  const sql = `UPDATE unfamiliar_words SET proficiency=proficiency${opreator}1, review_count=review_count+1 WHERE id = ?`;
-  return await execute(sql, [id]);
-};
+import { execute, select } from "./sqlite";
 
 /** unfamiliar_words 表操作类 */
 class UnfamiliarWordsTable {
@@ -133,7 +127,8 @@ class WordFreqTable {
     return data.length > 0;
   }
   async add(word: string) {
-    if (await this.has(word)) {
+    const has = await this.has(word);
+    if (has) {
       return await execute(
         `UPDATE word_freq SET frequency=frequency+1 where word=?`,
         [word]
@@ -164,6 +159,4 @@ class WordFreqTable {
   }
 }
 
-export const unfamiliarWordsTable = new UnfamiliarWordsTable();
-export const articlesTable = new ArticlesTable();
-export const wordfreqTable = new WordFreqTable();
+export { UnfamiliarWordsTable, ArticlesTable, WordFreqTable };
