@@ -6,12 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "patch": "npm version patch --no-git-tag-version",
-    "minor": "npm version minor --no-git-tag-version",
-    "git:patch": "npm version patch -m \"release: %s\"",
-    "git:minor": "npm version minor -m \"release: %s\"",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "minor": "npm version minor --no-git-tag-version",
+    "patch": "npm version patch --no-git-tag-version",
+    "git:minor": "npm version minor -m \"release: %s\"",
+    "git:patch": "npm version patch -m \"release: %s\""
   },
   "dependencies": {
     "@tauri-apps/api": "^1.4.0",
