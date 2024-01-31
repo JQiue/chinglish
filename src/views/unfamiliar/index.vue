@@ -47,15 +47,14 @@
             <n-card v-for="word in words" :key="word.id" @click="handleAudio(word.word)"
               content-style="text-align:center;">
               <p class="text-h2">{{ word.word }}</p>
+              <n-space justify="center">
+                <n-button @click="handleRemember">记得</n-button>
+                <n-button @click="handleForget">不记得</n-button>
+              </n-space>
             </n-card>
           </n-carousel>
-          <n-space justify="center">
-            <n-button @click="handleRemember">记得</n-button>
-            <n-button @click="handleForget">不记得</n-button>
-          </n-space>
         </template>
       </template>
-
     </div>
 
     <div class="fixed" v-show="checkWords.length != 0">
