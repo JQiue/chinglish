@@ -14,7 +14,7 @@
     "patch": "npm version patch --no-git-tag-version",
     "minor": "npm version minor --no-git-tag-version",
     "git:patch": "npm version patch -m \"release: %s\"",
-    "git:minor": "npm version minor -m \"release: %s\"",
+    "git:minor": "npm version minor -m \"release: %s\""
   },
   "dependencies": {
     "@tauri-apps/api": "^1.4.0",
