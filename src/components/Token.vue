@@ -27,19 +27,18 @@ const style = reactive<CSSProperties>({
 
 /** 统计词频 */
 const wordFreq = () => {
-  const word = props.token.replace(/[,|?|!.|']/, '');
+  const word = props.token.replace(/[\s|,|?|!|.|']/g, '');
   if (word.length == 0) return;
   addWord(word);
 }
 
 /** 高亮单词 */
 const highlightToken = async () => {
-  const word = props.token.replace(/[\s|,|?|!.]/, '');
+  const word = props.token.replace(/[\s|,|?|!|.]/g, '');
+  console.log(`${word}`);
   if (await unfamiliarWordsTable.has(word)) {
     console.log(`has ${word}`);
     style.fontWeight = 600;
-  } else {
-    console.log(`${word}`);
   }
 }
 
