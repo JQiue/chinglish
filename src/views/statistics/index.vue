@@ -7,6 +7,7 @@
         <n-button>清除所有统计数据</n-button>
       </template>
     </n-popconfirm>
+    <n-button @click="handleDelDuplicate">去重</n-button>
     <n-select v-model:value="limit" :options="options" @update:value="handleChange" />
   </n-space>
   <div class="statistics" id="statistics"> </div>
@@ -52,9 +53,17 @@ const getVocabularySize = async () => {
 }
 
 /** 清除数据 */
-const handleClear = () => {
-  wordfreqTable.clear();
-  draw()
+const handleClear = async () => {
+  await wordfreqTable.clear();
+  await getVocabularySize();
+  await draw();
+}
+
+/** 去重 */
+const handleDelDuplicate = async () => {
+  await wordfreqTable.delDuplicate();
+  await getVocabularySize();
+  await draw();
 }
 
 /** 绘制图表 */

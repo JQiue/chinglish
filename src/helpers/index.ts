@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn.js";
+import xml from "xml-js";
 
 dayjs.locale("zh-cn");
 
@@ -109,4 +110,145 @@ const map = new Map([
 
 export const mapping = (key: string) => {
   return map.get(key);
+};
+
+interface Element {
+  type: string;
+  name: string;
+  cdata?: string;
+  text?: string;
+  link?: string;
+  url?: string;
+  title?: string;
+  elements?: Element[];
+}
+
+interface RSSImage {
+  title: string;
+  link: string;
+  url: string;
+}
+
+interface Item {
+  title: string;
+  link: string;
+  description: string;
+  author: string;
+  comments: string;
+  category: string;
+  enclosure: string;
+  guid: string;
+  pubDate: string;
+  source: string;
+}
+
+interface Channel {
+  title: string;
+  link: string;
+  description: string;
+  image: RSSImage;
+  lastBuildDate: string;
+  pubDate: string;
+  language: string;
+}
+
+interface RSS {
+  channel: Channel;
+  items: Item[];
+}
+
+export const resolveItem = (elements: Element[]) => {
+  const obj: any = {
+    category: "",
+    link: "",
+    title: "",
+    guid: "",
+    description: "",
+    author: "",
+    pubDate: "",
+    comments: "",
+    enclosure: "",
+    source: "",
+  };
+  elements.forEach((e) => {
+    if (e.elements && e.elements[0]) {
+      const item = e.elements[0];
+      obj[e.name] = item.text ?? item.cdata;
+    }
+  });
+  return obj;
+};
+
+export const fetchFeedList = async (url: string) => {
+  const resp = await fetch(url);
+  const text = await resp.text();
+  const xmlData = xml.xml2js(text);
+  const obj: RSS = {
+    channel: {
+      title: "",
+      link: "",
+      description: "",
+      image: {
+        title: "",
+        link: "",
+        url: "",
+      },
+      lastBuildDate: "",
+      pubDate: "",
+      language: "",
+    },
+    items: [],
+  };
+  if (!xmlData.elements) return obj;
+  const channel: Element[] = (xmlData.elements as any[]).find(
+    (e) => e.name == "rss"
+  ).elements;
+
+  if (channel.length > 0 && channel[0].elements) {
+    const elements = channel[0].elements;
+    elements.forEach((e) => {
+      if (e.name == "title" && e.elements) {
+        obj.channel.title = e.elements[0].cdata ?? e.elements[0].text ?? "";
+      }
+      if (e.name == "link" && e.elements) {
+        obj.channel.link = e.elements[0].cdata ?? e.elements[0].text ?? "";
+      }
+      if (e.name == "description" && e.elements) {
+        obj.channel.description =
+          e.elements[0].cdata ?? e.elements[0].text ?? "";
+      }
+      if (e.name == "lastBuildDate" && e.elements) {
+        obj.channel[e.name] = e.elements[0].cdata ?? e.elements[0].text ?? "";
+      }
+      if (e.name == "pubDate" && e.elements) {
+        obj.channel[e.name] = e.elements[0].cdata ?? e.elements[0].text ?? "";
+      }
+      if (e.name == "language" && e.elements) {
+        obj.channel[e.name] = e.elements[0].cdata ?? e.elements[0].text ?? "";
+      }
+      if (e.name == "image" && e.elements) {
+        obj.channel.image = { link: "", url: "", title: "" };
+        e.elements.forEach((e) => {
+          if (e.elements) {
+            if (e.name == "title") {
+              obj.channel.image[e.name] =
+                e.elements[0].cdata ?? e.elements[0].text ?? "";
+            }
+            if (e.name == "link") {
+              obj.channel.image[e.name] =
+                e.elements[0].cdata ?? e.elements[0].text ?? "";
+            }
+            if (e.name == "url") {
+              obj.channel.image[e.name] =
+                e.elements[0].cdata ?? e.elements[0].text ?? "";
+            }
+          }
+        });
+      }
+      if (e.name == "item" && e.elements) {
+        obj.items.push(resolveItem(e.elements));
+      }
+    });
+  }
+  return obj;
 };

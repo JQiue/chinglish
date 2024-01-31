@@ -3,7 +3,7 @@ import { execute, select } from "./sqlite";
 
 /** unfamiliar_words 表操作类 */
 class UnfamiliarWordsTable {
-  /** 存在 */
+  /** 是否存在存在 */
   async has(word: string) {
     const results = await select<UnfamiliarWord[]>(
       `select * from unfamiliar_words where word=?`,
@@ -156,6 +156,15 @@ class WordFreqTable {
       `SELECT DISTINCT count(word) as count FROM word_freq`
     );
     return result[0].count;
+  }
+  /** 去重 */
+  async delDuplicate() {
+    const result = await select<WordFreq[]>(
+      `SELECT * FROM word_freq GROUP BY word HAVING COUNT(word) > 1`
+    );
+    for (const { id } of result) {
+      await this.delete(id);
+    }
   }
 }
 

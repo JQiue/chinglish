@@ -10,12 +10,11 @@
 </template>
 
 <script setup lang="ts">
+import { CSSProperties, reactive, ref, onMounted } from 'vue';
 import { useUnfamiliarWordsTable } from '@/db';
 import { mapping } from '@/helpers';
 import { addWord } from '@/store/wordFreq';
 import { Term } from 'node_modules/compromise/types/misc';
-import { CSSProperties, reactive, ref } from 'vue';
-import { onMounted } from 'vue';
 
 const unfamiliarWordsTable = useUnfamiliarWordsTable();
 
@@ -35,9 +34,12 @@ const wordFreq = () => {
 
 /** 高亮单词 */
 const highlightToken = async () => {
-  const word = props.token.replace(/[,|?|!.]/, '');
+  const word = props.token.replace(/[\s|,|?|!.]/, '');
   if (await unfamiliarWordsTable.has(word)) {
-    style.fontWeight = 600
+    console.log(`has ${word}`);
+    style.fontWeight = 600;
+  } else {
+    console.log(`${word}`);
   }
 }
 
@@ -50,14 +52,14 @@ const resolve = () => {
 const fotmatTag = (tag: string) => {
   const mapTag = mapping(tag);
   if (mapTag) {
-    return mapTag
+    return mapTag;
   } else {
     console.log(tag);
     return tag;
   }
 }
 
-onMounted(async () => {
+onMounted(() => {
   wordFreq();
   highlightToken();
   resolve();
