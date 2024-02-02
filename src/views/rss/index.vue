@@ -20,7 +20,9 @@ const feeds = ["https://linux.cn/rss.xml", "https://rsshub.moeyy.cn/zhihu/daily.
 
 const getMenuList = async () => {
   feeds.forEach(async url => {
-    const { channel, items } = await fetchFeedList(url);
+    const data = await fetchFeedList(url);
+    if (!data) return;
+    const { channel, items } = data;
     menuOptions.value.push({
       label: channel.title,
       key: channel.title,
@@ -48,7 +50,7 @@ onMounted(async () => {
 }
 
 .menu {
-  width: 559px;
+  width: 259px;
 }
 
 .iframe {

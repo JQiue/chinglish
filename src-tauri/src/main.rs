@@ -5,12 +5,12 @@ mod command;
 mod helper;
 mod tray;
 
-use command::{download, greet};
+use command::get_handlers;
 use tray::system_tray;
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![greet, download])
+    .invoke_handler(get_handlers())
     .plugin(tauri_plugin_sql::Builder::default().build())
     .system_tray(system_tray())
     .run(tauri::generate_context!())

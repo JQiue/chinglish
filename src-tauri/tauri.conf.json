@@ -15,7 +15,15 @@
       "all": false,
       "shell": {
         "all": false,
-        "open": true
+        "open": true,
+        "execute": true,
+        "scope": [
+          {
+            "name": "open-file-explorer",
+            "cmd": "explorer",
+            "args": [{ "validator": "\\S+" }]
+          }
+        ]
       },
       "path": {
         "all": true
@@ -75,8 +83,8 @@
         "fullscreen": false,
         "resizable": true,
         "title": "chinglish",
-        "width": 800,
-        "height": 600
+        "width": 1120,
+        "height": 630
       }
     ],
     "systemTray": {

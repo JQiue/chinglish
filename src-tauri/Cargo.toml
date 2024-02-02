@@ -2,7 +2,7 @@
 name = "chinglish"
 version = "0.0.0"
 description = "A Tauri App"
-authors = ["you"]
+authors = ["ush2a"]
 license = ""
 repository = ""
 edition = "2021"
@@ -13,7 +13,7 @@ edition = "2021"
 tauri-build = { version = "1.4", features = [] }
 
 [dependencies]
-tauri = { version = "1.4", features = [
+tauri = { version = "1.4", features = [ "shell-execute",
   "fs-exists",
   "fs-read-file",
   "notification-all",

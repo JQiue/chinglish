@@ -7,7 +7,7 @@
       作者：{{ author }}
     </n-thing>
     <n-thing>
-      数据：{{ dataPath }}
+      数据：<n-button text @click="handleClickPath">{{ dataPath }}</n-button>
       <n-button type="warning" size="small" :loading="exportLoading" @click="handleExport">
         导出到桌面
       </n-button>
@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { useDump } from '@/db';
-import { app, path } from '@tauri-apps/api';
+import { app, path, shell } from '@tauri-apps/api';
 import { ref, onMounted } from 'vue';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
 
@@ -41,6 +41,10 @@ const handleExport = async () => {
     }
   }
   exportLoading.value = false;
+}
+
+const handleClickPath = () => {
+  new shell.Command("open-file-explorer", ["/select," + dataPath.value + "chinglish.db"]).spawn();
 }
 
 onMounted(async () => {
