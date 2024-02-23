@@ -149,6 +149,7 @@ const backgroundColorList = ref([
   { value: '#fcefff', label: '红粉' },
   { value: '#c0d3d7', label: '仿墨水屏' },
   { value: '#f5f5dc', label: '米黄' },
+  { value: 'rgb(16, 16, 20)', label: '暗黑' },
 ]);
 /** 选中的单词 */
 const selectedWord = ref('');
@@ -330,10 +331,27 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.reader-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.125);
+  border-radius: 2em;
+}
+
+.reader-container::-webkit-scrollbar-thumb {
+  background-color: rgba(144, 147, 153, 1);
+  border-radius: 2em;
+  transition: all, 0.3;
+}
+
+.reader-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(144, 147, 153, 0.75);
+}
+
 .reader-container {
   line-height: 160%;
-  background-color: #F9F5E9;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: auto;
 }
 
 .reader-content-container {

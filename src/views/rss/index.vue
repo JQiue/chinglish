@@ -3,8 +3,7 @@
     <div class="menu">
       <n-menu :indent="16" :options="menuOptions" @update:value="handleUpdateMenuValue" />
     </div>
-    <div class="iframe" :src="iframeSrc" v-html="html">
-    </div>
+    <div class="iframe" :src="iframeSrc" v-html="html"></div>
   </div>
 </template>
 
@@ -47,17 +46,17 @@ onMounted(async () => {
   display: flex;
   width: 100%;
   height: 100vh;
-}
 
-.menu {
-  width: 259px;
-}
+  .menu {
+    width: 259px;
+  }
 
-.iframe {
-  flex: 1;
-  padding: 0 1rem;
-  overflow-y: auto;
-  overflow-x: hidden;
+  .iframe {
+    flex: 1;
+    padding: 0 1rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 }
 
 .iframe>>>img {

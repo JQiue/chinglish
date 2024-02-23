@@ -118,7 +118,7 @@ onMounted(async () => {
   .prev,
   .next {
     position: absolute;
-    height: 100%;
+    height: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -135,13 +135,19 @@ onMounted(async () => {
   }
 
   .prev {
-    top: 0;
+    top: 50%;
     left: 0;
+    transform: translateY(-50%);
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
   }
 
   .next {
-    top: 0;
+    top: 50%;
     right: 0;
+    transform: translateY(-50%);
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
   }
 }
 </style>

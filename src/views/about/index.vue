@@ -24,7 +24,7 @@ import { isPermissionGranted, requestPermission, sendNotification } from '@tauri
 const dump = useDump()
 
 const version = ref('0.0.0');
-const author = ref('Ush2a');
+const author = ref('USH2A');
 const dataPath = ref('');
 const exportLoading = ref(false);
 
