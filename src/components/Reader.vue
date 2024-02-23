@@ -3,6 +3,11 @@
 
     <div class="reader-top">
       <div class="btn-group">
+        <n-button quaternary circle @click="handleShowStatDrawerClick()">
+          <template #icon>
+            <StatIcon></StatIcon>
+          </template>
+        </n-button>
         <n-button quaternary circle @click="handleRead(props.content ?? '')">
           <template #icon>
             <VoiceIcon></VoiceIcon>
@@ -100,6 +105,31 @@
       </n-list>
     </n-drawer-content>
   </n-drawer>
+
+  <n-drawer v-model:show="showStatDrawer" :width="302" placement="right">
+    <n-drawer-content title="统计">
+      <n-row>
+        <n-col :span="6">词数</n-col>
+        <n-col :span="6">{{ stat.word_count }}</n-col>
+      </n-row>
+      <n-row>
+        <n-col :span="6">平均句长</n-col>
+        <n-col :span="6">{{ stat.average_sentence_length }}</n-col>
+      </n-row>
+      <n-row>
+        <n-col :span="6">动词</n-col>
+        <n-col :span="6">{{ stat.verb_count }}</n-col>
+      </n-row>
+      <n-row>
+        <n-col :span="6">名词</n-col>
+        <n-col :span="6">{{ stat.noun_count }}</n-col>
+      </n-row>
+      <n-row>
+        <n-col :span="6">形容词</n-col>
+        <n-col :span="6">{{ stat.adj_count }}</n-col>
+      </n-row>
+    </n-drawer-content>
+  </n-drawer>
 </template>
 
 <script setup lang="ts">
@@ -108,8 +138,9 @@ import { useArticlesTable, useDictTable, useUnfamiliarWordsTable } from '@/db';
 import { getReaderStyleConfig, setReaderStyleConfig } from '../localdata/index';
 import { toNumber, audio } from '@/helpers';
 import Segment from '../components/Segment.vue';
-import SettingsIcon from '../components/icons/SettingsIcon.vue';
-import VoiceIcon from '../components/icons/VoiceIcon.vue';
+import SettingsIcon from '@/components/icons/SettingsIcon.vue';
+import VoiceIcon from '@/components/icons/VoiceIcon.vue';
+import StatIcon from '@/components/icons/StatIcon.vue';
 import { count as countWord } from 'letter-count';
 import nlp from 'compromise';
 
@@ -157,16 +188,29 @@ const x = ref(0);
 const y = ref(0);
 const showPopover = ref(false);
 const showDrawer = ref(false);
+const showStatDrawer = ref(false);
 const showSettingsDrawer = ref(false);
 /** 查询单词结果 */
 const queryWords = ref<Dict[]>([]);
 /** 阅读时间，分钟 */
 const readTime = ref(0);
 const timeId = ref();
+const stat = reactive({
+  /** 字数 */
+  word_count: 0,
+  /** 平均句长 */
+  average_sentence_length: 0,
+  /** 名词数量 */
+  noun_count: 0,
+  /** 动词数量 */
+  verb_count: 0,
+  /** 形容词数量 */
+  adj_count: 0,
+})
 
 const nlpProcessing = async () => {
   if (props.content) {
-    console.log(nlp(props.content).json());
+    // console.log(nlp(props.content).json());
   }
 }
 
@@ -238,6 +282,10 @@ const handleShowSettingsDrawerClick = () => {
   showSettingsDrawer.value = true;
 }
 
+const handleShowStatDrawerClick = () => {
+  showStatDrawer.value = true;
+}
+
 /** 处理查询单词 */
 const handleQueryWord = async (word: string) => {
   if (dictTable) {
@@ -263,12 +311,34 @@ const articleReadCount = () => {
   }, ms);
 }
 
+const calculateStat = () => {
+  if (props.content) {
+    const data = nlp(props.content).json() as any[];
+    stat.word_count = 0;
+    stat.average_sentence_length = 0;
+    stat.noun_count = 0;
+    stat.verb_count = 0;
+    stat.adj_count = 0;
+    console.log(data);
+    data.forEach(d => {
+      stat.word_count += d.terms.length;
+      d.terms.forEach(term => {
+        if (term.chunk == "Noun") stat.noun_count++
+        if (term.chunk == "Verb") stat.verb_count++
+        // if(term.chunk=="Verb") stat.verb_count++
+      });
+    });
+    stat.average_sentence_length = toNumber(stat.word_count / data.length, 2);
+  }
+}
+
 watch(props, () => {
   title.value = props.title;
   toSegment(props.content);
   getContentReadTime();
   articleReadCount();
   nlpProcessing();
+  calculateStat();
 })
 
 watch(styleConfig, ({ fontFamily }) => {
@@ -281,7 +351,6 @@ watch(showPopover, (value) => {
 })
 
 onMounted(() => {
-
   styleConfig.fontSize = getReaderStyleConfig()?.fontSize || 1;
   styleConfig.lineHeight = getReaderStyleConfig()?.lineHeight || 1;
   styleConfig.fontFamily = getReaderStyleConfig()?.fontFamily || '';

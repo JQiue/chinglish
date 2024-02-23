@@ -10,8 +10,8 @@
 import { onMounted, ref } from 'vue';
 import { useArticlesTable } from '@/db';
 import { getLastArticleId, saveLastArticleId } from '@/helpers';
+import { pushWord } from '@/store/wordFreq';
 import Reader from '@/components/Reader.vue';
-import { pushWord } from '../../store/wordFreq';
 
 const articlesTable = useArticlesTable();
 

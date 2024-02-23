@@ -35,9 +35,7 @@ const wordFreq = () => {
 /** 高亮单词 */
 const highlightToken = async () => {
   const word = props.token.replace(/[\s|,|?|!|.]/g, '');
-  console.log(`${word}`);
   if (await unfamiliarWordsTable.has(word)) {
-    console.log(`has ${word}`);
     style.fontWeight = 600;
   }
 }
