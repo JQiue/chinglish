@@ -7,7 +7,9 @@
       <n-layout>
         <n-layout-content>
           <n-scrollbar :style="{ height: activeHeight }">
-            <router-view></router-view>
+            <n-message-provider>
+              <router-view></router-view>
+            </n-message-provider>
           </n-scrollbar>
         </n-layout-content>
       </n-layout>

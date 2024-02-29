@@ -14,9 +14,12 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api';
 import { BaseDirectory, exists } from '@tauri-apps/api/fs';
-import { ref } from 'vue';
+import { useMessage } from 'naive-ui';
+
+const message = useMessage();
 
 const downloading = ref(false);
 const resources = ref([{
@@ -28,7 +31,8 @@ const handleDownload = async (url: string) => {
   downloading.value = true
   const has = await exists("dict.db", { dir: BaseDirectory.App });
   if (has) {
-    console.log("存在");
+    message.info("已经下载了");
+    downloading.value = false;
     return
   }
   console.log(await invoke("download", { url }));

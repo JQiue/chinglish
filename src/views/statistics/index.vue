@@ -23,7 +23,9 @@ import { useWordFreqTable } from '@/db';
 import * as echarts from 'echarts';
 import wonderland from '../../assets/wonderland.project.json';
 import { SelectBaseOption } from 'naive-ui/es/select/src/interface';
+import { useMessage } from 'naive-ui';
 
+const message = useMessage();
 const wordfreqTable = useWordFreqTable();
 
 echarts.registerTheme("wonderland", wonderland);
@@ -67,6 +69,7 @@ const handleClear = async () => {
 /** 去重 */
 const handleDelDuplicate = async () => {
   await wordfreqTable.delDuplicate();
+  message.loading("正在去重");
   await getVocabularySize();
   await draw();
 }
