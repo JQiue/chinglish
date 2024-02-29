@@ -143,6 +143,7 @@ import VoiceIcon from '@/components/icons/VoiceIcon.vue';
 import StatIcon from '@/components/icons/StatIcon.vue';
 import { count as countWord } from 'letter-count';
 import nlp from 'compromise';
+import { Term } from 'node_modules/compromise/types/misc';
 
 const articlesTable = useArticlesTable();
 const unfamiliarWordsTable = useUnfamiliarWordsTable();
@@ -313,16 +314,15 @@ const articleReadCount = () => {
 
 const calculateStat = () => {
   if (props.content) {
-    const data = nlp(props.content).json() as any[];
+    const data = nlp(props.content).json() as { text: string, terms: Term[] }[];
     stat.word_count = 0;
     stat.average_sentence_length = 0;
     stat.noun_count = 0;
     stat.verb_count = 0;
     stat.adj_count = 0;
-    console.log(data);
     data.forEach(d => {
       stat.word_count += d.terms.length;
-      d.terms.forEach(term => {
+      d.terms.forEach((term: Term) => {
         if (term.chunk == "Noun") stat.noun_count++
         if (term.chunk == "Verb") stat.verb_count++
         // if(term.chunk=="Verb") stat.verb_count++

@@ -1,5 +1,9 @@
 <template>
-  <n-statistic label="个人词汇量" :value="vocabularySize"> </n-statistic>
+  <n-statistic :value="vocabularySize">
+    <template #label>
+      个人词汇量（{{ getLevel() }}）
+    </template>
+  </n-statistic>
   <n-space>
     <n-popconfirm positiveText="确定" negative-text="取消" @positive-click="handleClear">
       确定删除？
@@ -88,6 +92,24 @@ const draw = async () => {
     ]
   }
   myChart.setOption(option);
+}
+
+/** 戏称词汇量水平  */
+const getLevel = () => {
+  const count = vocabularySize.value;
+  if (count == 0) {
+    return '婴儿般'
+  } else if (count < 1000) {
+    return '舔奶盖'
+  } else if (count < 2000) {
+    return '唯唯诺诺'
+  } else if (count < 4000) {
+    return '小学生'
+  } else if (count < 8000) {
+    return 'Not a baby'
+  } else if (count < 10000) {
+    return '不是国人'
+  }
 }
 
 onMounted(async () => {
