@@ -30,19 +30,20 @@ echarts.registerTheme("wonderland", wonderland);
 let myChart: echarts.ECharts;
 
 const vocabularySize = ref(0);
-const limit = ref(10);
+const limit = ref(25);
 const options = ref<SelectBaseOption[]>([
-  {
-    label: "10",
-    value: 10
-  },
   {
     label: "25",
     value: 25
   },
   {
-    label: "50",
-    value: 50
+    label: "100",
+    value: 100
+  }
+  ,
+  {
+    label: "500",
+    value: 500
   }
 ]);
 
@@ -80,14 +81,31 @@ const draw = async () => {
       text: '高频单词'
     },
     tooltip: {},
+    dataZoom: [
+      {
+        type: 'inside'
+      },
+      {
+        type: 'slider'
+      }
+    ],
     xAxis: {
+    },
+    yAxis: {
+      inverse: true,
+      type: 'category',
       data: wordData
     },
-    yAxis: {},
     series: [
       {
         type: 'bar',
-        data: freqData
+        data: freqData,
+        large: true,
+        label: {
+          show: true,
+          position: 'right',
+          // valueAnimation: true
+        }
       }
     ]
   }
