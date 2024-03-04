@@ -7,7 +7,6 @@
       </n-tabs>
     </div>
 
-
     <div class="content">
       <div style="height: 100%; display: flex; justify-content: center; align-items: center;" v-if="words.length == 0">
         <n-empty description="空空如也">

@@ -12,8 +12,11 @@ const addWord = (word: string) => {
 };
 
 const pushWord = async () => {
-  wordFreq.word.forEach((word) => wordfreqTable.add(word));
+  for (const word of wordFreq.word) {
+    await wordfreqTable.add(word);
+  }
   wordFreq.word.length = 0;
+  // wordFreq.word.forEach(async (word) => await wordfreqTable.add(word));
 };
 
 export { addWord, pushWord };

@@ -120,7 +120,7 @@ const execute = async (
  * @description: 创建表
  * @return {Promise<QueryResult>}
  */
-const createTable = () => {
+const createTable = async () => {
   execute(`
   CREATE TABLE IF NOT EXISTS unfamiliar_words (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -156,6 +156,33 @@ const createTable = () => {
     frequency INTEGER DEFAULT 1
   );
   `);
+  await addColumn("unfamiliar_words", "word", "TEXT");
+  await addColumn("unfamiliar_words", "article_id", "INTEGER");
+  await addColumn("articles", "translate", "TEXT");
+};
+
+/**
+ * @description: 判断表的字段是否存在
+ * @return {Promise<QueryResult>}
+ */
+export const hasColumn = async (table: string, column: string) => {
+  const result = await select<Record<string, any>[]>(
+    `SELECT COUNT(*) as count FROM sqlite_master WHERE type='table' AND name=? AND sql LIKE '%${column}%'`,
+    [table]
+  );
+  return result[0].count > 0;
+};
+
+export const addColumn = async (
+  table: string,
+  column: string,
+  type: "TEXT" | "INTEGER" | "REAL" | "BLOB" | "NULL"
+) => {
+  if (await hasColumn(table, column)) {
+    return;
+  } else {
+    execute(`ALTER TABLE ${table} ADD ${column} ${type}`);
+  }
 };
 
 export { execute, select, createTable, dump };

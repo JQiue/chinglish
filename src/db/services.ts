@@ -3,7 +3,7 @@ import { execute, select } from "./sqlite";
 
 /** unfamiliar_words 表操作类 */
 class UnfamiliarWordsTable {
-  /** 是否存在存在 */
+  /** 是否存在 */
   async has(word: string) {
     const results = await select<UnfamiliarWord[]>(
       `select * from unfamiliar_words where word=?`,
@@ -50,11 +50,22 @@ class ArticlesTable {
     content: string,
     collection: string,
     volume: string,
-    source: string
+    source: string,
+    translate: string
   ) {
     return await execute(
-      `INSERT INTO articles(title, author, content, collection, source, volume, read_count, created_at) VALUES(?,?,?,?,?,?,?,?)`,
-      [title, author, content, collection, source, volume, 0, nowDatetime()]
+      `INSERT INTO articles(title, author, content, collection, source, volume, read_count, created_at, translate) VALUES(?,?,?,?,?,?,?,?,?)`,
+      [
+        title,
+        author,
+        content,
+        collection,
+        source,
+        volume,
+        0,
+        nowDatetime(),
+        translate,
+      ]
     );
   }
   /** 删除 */
@@ -70,10 +81,11 @@ class ArticlesTable {
     collection,
     source,
     volume,
+    translate,
   }: Article) {
     return await execute(
-      `UPDATE articles SET title=?,author=?,content=?,collection=?,source=?,volume=? where id=?`,
-      [title, author, content, collection, source, volume, id]
+      `UPDATE articles SET title=?,author=?,content=?,collection=?,source=?,volume=?,translate=? where id=?`,
+      [title, author, content, collection, source, volume, translate, id]
     );
   }
   /** 获取文章 */
@@ -119,12 +131,13 @@ class ArticlesTable {
 
 /** word_freq 表操作类 */
 class WordFreqTable {
+  /** 存在 */
   async has(word: string) {
-    const data = await select<WordFreq[]>(
+    const result = await select<WordFreq[]>(
       `SELECT * FROM word_freq where word=?`,
       [word]
     );
-    return data.length > 0;
+    return result.length > 0;
   }
   async add(word: string) {
     const has = await this.has(word);

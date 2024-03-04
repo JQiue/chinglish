@@ -8,14 +8,14 @@
 </template>
 
 <script setup lang="ts">
-import { fetchFeedList } from '@/helpers';
 import { MenuOption } from 'naive-ui';
 import { ref, onMounted } from 'vue';
+import { fetchFeedList } from '@/helpers';
 
 const menuOptions = ref<MenuOption[]>([]);
 const iframeSrc = ref("");
 const html = ref("");
-const feeds = ["https://linux.cn/rss.xml", "https://rsshub.moeyy.cn/zhihu/daily.rss"];
+const feeds = ["https://linux.cn/rss.xml", "https://rsshub.moeyy.cn/zhihu/daily.rss", "https://rustcc.cn/rss"];
 
 const getMenuList = async () => {
   feeds.forEach(async url => {
@@ -36,8 +36,8 @@ const handleUpdateMenuValue = (_key: string, item: MenuOption) => {
   html.value = item.content as string;
 }
 
-onMounted(async () => {
-  await getMenuList()
+onMounted(() => {
+  getMenuList()
 })
 </script>
 

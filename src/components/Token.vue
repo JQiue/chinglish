@@ -1,11 +1,12 @@
 <template>
   <n-tooltip trigger="hover">
-    <template #trigger>
-      <span :style="style"> {{ props.token }}</span>
-    </template>
     <span v-for="(tag, index) in tags" :key="tag">
       {{ fotmatTag(tag) }}
-      <span v-if="tags.length - 1 != index">&nbsp;</span></span>
+      <span v-if="tags.length - 1 != index">&nbsp;</span>
+    </span>
+    <template #trigger>
+      <span :style="style">{{ props.term.text + props.term.post }}</span>
+    </template>
   </n-tooltip>
 </template>
 
@@ -18,7 +19,7 @@ import { Term } from 'node_modules/compromise/types/misc';
 
 const unfamiliarWordsTable = useUnfamiliarWordsTable();
 
-const props = defineProps<{ term: Term, token: string }>();
+const props = defineProps<{ term: Term }>();
 
 const tags = ref<string[]>([]);
 const style = reactive<CSSProperties>({
@@ -27,14 +28,14 @@ const style = reactive<CSSProperties>({
 
 /** 统计词频 */
 const wordFreq = () => {
-  const word = props.token.replace(/[\s|,|?|!|.|']/g, '');
+  const word = props.term.normal.replace(/[\s|,|?|!|.|']/g, '');
   if (word.length == 0) return;
   addWord(word);
 }
 
 /** 高亮单词 */
 const highlightToken = async () => {
-  const word = props.token.replace(/[\s|,|?|!|.]/g, '');
+  const word = props.term.normal;
   if (await unfamiliarWordsTable.has(word)) {
     style.fontWeight = 600;
   }

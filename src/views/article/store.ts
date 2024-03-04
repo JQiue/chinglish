@@ -10,6 +10,7 @@ interface State {
 export const state = reactive<State>({
   showEditor: false,
   editorMode: "add",
+  articles: [],
   article: {
     id: 0,
     title: "",
@@ -20,6 +21,6 @@ export const state = reactive<State>({
     volume: "",
     read_count: 0,
     created_at: "",
+    translate: "",
   },
-  articles: [],
 });

@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn.js";
 import xml from "xml-js";
+import { invoke } from "@tauri-apps/api";
 
 dayjs.locale("zh-cn");
 
@@ -179,12 +180,10 @@ export const resolveItem = (elements: Element[]) => {
   return obj;
 };
 
-import { invoke } from "@tauri-apps/api";
-
 export const fetchFeedList = async (url: string) => {
   const text = await invoke<string>("rss", { url });
   if (text == "error") return;
-  console.log(text);
+  // console.log(text);
   // const resp = await fetch(url);
   // const text = await resp.text();
   const xmlData = xml.xml2js(text);

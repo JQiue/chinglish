@@ -47,6 +47,8 @@ interface Article {
   collection: string;
   /** 阅读次数 */
   read_count: number;
+  /** 阅读次数 */
+  translate: string;
   created_at: string;
 }
 

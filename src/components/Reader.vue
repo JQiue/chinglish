@@ -9,16 +9,19 @@
           </template>
         </n-button>
         <n-button quaternary circle @click="handleRead(props.content ?? '')">
+
           <template #icon>
             <VoiceIcon></VoiceIcon>
           </template>
         </n-button>
         <n-button quaternary circle @click="handleShowSettingsDrawerClick">
+
           <template #icon>
             <SettingsIcon></SettingsIcon>
           </template>
         </n-button>
       </div>
+
     </div>
 
     <div class="reader-content-container">
@@ -60,10 +63,10 @@
       <div>
         <span>文字大小</span>
         <n-slider v-model:value="styleConfig.fontSize" :min="1" :max="1.8" :step="0.2" :marks="{
-          1: '小',
-          1.4: '中',
-          1.8: '大',
-        }" />
+    1: '小',
+    1.4: '中',
+    1.8: '大',
+  }" />
       </div>
       <div>
         <span>文字间距</span>
@@ -175,6 +178,7 @@ const fontFamilyList = ref([
   { value: 'Helvetica', label: 'Helvetica' },
   { value: 'Roboto', label: 'Roboto' },
 ]);
+/** 可用的 background-color */
 const backgroundColorList = ref([
   { value: '#ffffff', label: '白雪' },
   { value: '#ffffed', label: '明黄' },
@@ -211,7 +215,6 @@ const stat = reactive({
 
 const nlpProcessing = async () => {
   if (props.content) {
-    // console.log(nlp(props.content).json());
   }
 }
 

@@ -106,8 +106,8 @@ const init = async () => {
   })
 }
 
-onMounted(async () => {
-  await init();
+onMounted(() => {
+  init();
 });
 </script>
 
