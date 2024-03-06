@@ -123,30 +123,38 @@
               </template>
             </n-list-item>
           </n-list>
+
+          <n-float-button :right="20" :bottom="20" type="primary"
+            @click="() => { state.showEditor = true, state.editorMode = 'add' }">
+            +
+          </n-float-button>
         </template>
 
         <template v-if="tab == '中译英'">
-          <n-carousel v-model:current-index="currentIndexOfCarousel" show-arrow :show-dots="false">
-            <n-card v-for="(segment, index) in segments" :key="segment.translate">
-              <n-space vertical align="center">
-                <p class="text-h2">{{ segment.translate }}</p>
-                <n-input ref="inputInstRef" v-model:value="inputEnglish" placeholder=""
-                  @keyup.enter="handleVertify(index)"></n-input>
-              </n-space>
-            </n-card>
-          </n-carousel>
+          <div style="height: 123px;">
+            <n-carousel v-model:current-index="currentIndexOfCarousel" :show-dots="false">
+              <n-card v-for="segment in segments" :key="segment.translate">
+                <n-space vertical align="center">
+                  <p>{{ segment.translate }}</p>
+                  <span style="color: rgba(0, 0, 0, 0.5); font-size: 0.85rem;">{{ title }} -- {{ author }}</span>
+                </n-space>
+              </n-card>
+            </n-carousel>
+          </div>
+
+          <n-space vertical align="center">
+            <n-button type="primary" @click="handleChange">换一篇</n-button>
+            <n-input ref="inputInstRef" v-model:value="inputEnglish" placeholder="typing..."
+              @keyup.enter="handleVertify"></n-input>
+          </n-space>
         </template>
       </template>
 
     </div>
+
   </div>
 
-  <Editor :show="state.showEditor"></Editor>
-
-  <n-float-button :right="20" :bottom="20" type="primary"
-    @click="() => { state.showEditor = true, state.editorMode = 'add' }">
-    +
-  </n-float-button>
+  <Editor :show="state.showEditor" />
 </template>
 
 <script setup lang="ts">
@@ -155,8 +163,8 @@ import { useRouter } from 'vue-router';
 import { useArticlesTable } from '@/db';
 import { state } from './store';
 import { saveLastArticleId } from '@/helpers';
-import Editor from './Editor.vue';
 import { InputInst, useMessage } from 'naive-ui';
+import Editor from './Editor.vue';
 
 const articlesTable = useArticlesTable();
 const router = useRouter();
@@ -168,24 +176,29 @@ const tabs = ref(['列表', '中译英']);
 const currentIndexOfCarousel = ref(0);
 const inputEnglish = ref<string>('');
 const segments = ref<Record<string, any>[]>([]);
+const title = ref('');
+const author = ref('');
 
-const handleVertify = (index: number) => {
-  const segment = segments.value[index];
+const handleVertify = () => {
+  const segment = segments.value[currentIndexOfCarousel.value];
   if (compareString(segment.content, inputEnglish.value)) {
     currentIndexOfCarousel.value++;
     inputEnglish.value = '';
-    message.success("OK")
+    message.success("OK");
   } else {
-    message.error("NO")
+    message.error("NO");
   }
 };
 
-nextTick(() => {
-  inputInstRef.value?.focus();
-})
+// nextTick(() => {
+//   inputInstRef.value?.focus();
+// })
 
+/* 比较字符串 */
 function compareString(str1: string, str2: string) {
+  // 转为小写
   let a = str1.toLowerCase(), b = str2.toLowerCase();
+  // 去除符号
   a = a.replace(/[^\w]/g, ''), b = b.replace(/[^\w]/g, '');
   console.log(a, b);
   return a == b;
@@ -193,13 +206,24 @@ function compareString(str1: string, str2: string) {
 
 const getSegments = async (id: number) => {
   const article = await articlesTable.getById(id);
-  if (article) {
+  if (article && article.translate) {
+    title.value = article.title;
+    author.value = article.author;
     const contents = article?.content.split("\n");
     const translates = article?.translate.split("\n");
     segments.value = contents?.map((content, i) => {
       return { content, translate: translates[i] }
     })
+  } else {
+    message.warning("没有文章或没有翻译");
   }
+};
+
+const handleChange = async () => {
+  const index = Math.round(Math.random() * state.articles.length);
+  const article = state.articles[index];
+  // console.log(article);
+  getSegments(article.id);
 };
 
 const getArticles = async () => {
@@ -225,9 +249,13 @@ const handleRead = (id: number) => {
   router.push({ name: 'read' });
 }
 
+const init = async () => {
+  await getArticles();
+  await handleChange();
+}
+
 onMounted(() => {
-  getArticles();
-  getSegments(5);
+  init();
 });
 </script>
 
